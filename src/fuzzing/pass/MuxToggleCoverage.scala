@@ -26,7 +26,9 @@ object MuxToggleCoverage extends Transform with DependencyAPIMigration {
     val c = CircuitTarget(state.circuit.main)
 
     val newAnnos = mutable.ListBuffer[Annotation]()
-    val fullToggleAnnotation = state.annotations.collectFirst { case o: MuxToggleOpAnnotation => o }.get
+    val fullToggleAnnotation = state.annotations.collectFirst { case o: MuxToggleOpAnnotation => o }.getOrElse(
+      MuxToggleOpAnnotation(fullToggle = false)
+    )
     val useFullToggle: Boolean = fullToggleAnnotation.fullToggle
     newAnnos += fullToggleAnnotation
 
