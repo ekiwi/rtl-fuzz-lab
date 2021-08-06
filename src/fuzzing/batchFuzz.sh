@@ -7,6 +7,13 @@ HARNESS=tlul
 FIRRTL=test/resources/fuzzing/TLI2C.fir
 
 
+# Creates parent folder if it doesn't exist
+if ! [ -d ${OUT} ]; then
+  mkdir ${OUT}
+  echo "Generated output folder to store results: ${OUT}."
+  echo ""
+fi
+
 for i in {1..3}
 do
   echo "Starting fuzzing run: ${i}"
