@@ -17,6 +17,7 @@ def plotJSON(do_average, JSON_filepaths):
     plt.ylabel("Cumulative coverage %")
     plt.yticks([x for x in range(0, 110, 10)])
     plt.xlabel("Seconds")
+    plt.xlim([-10, 1200])
     plt.legend()
     plt.savefig("coveragePlot.png")
     plt.show()

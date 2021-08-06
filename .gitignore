@@ -20,9 +20,6 @@
 # Generated code
 input
 log
-out/
-seeds/
-*/__pycache__/
+*__pycache__/
 venv/
-results/
 coveragePlot.png

@@ -11,7 +11,7 @@ class RfuzzTargetTests extends AnyFlatSpec {
   val target = "rfuzz"
 
   it should "execute a single input" in {
-    val fuzzer = FIRRTLHandler.firrtlToTarget("test/resources/fuzzing/gcd.fir", target, "test_run_dir/rfuzz")
+    val fuzzer = FIRRTLHandler.firrtlToTarget("src/test/resources/fuzzing/TLI2C.fir", target, "test_run_dir/rfuzz")
     val input = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).map(_.toByte)
     val (coverage, _) = fuzzer.run(new ByteArrayInputStream(input))
     println(coverage)
