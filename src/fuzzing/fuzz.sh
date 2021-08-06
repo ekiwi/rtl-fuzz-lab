@@ -37,10 +37,10 @@ echo ""
 echo "Calling AFLDriver on: ${FIRRTL} input a2j j2a ${harness}"
 echo ""
 # Option 1 (preferred due to slightly better memory usage and possible slightly better execution speed)
-java -cp target/scala-2.12/chiseltest-assembly-0.5-SNAPSHOT.jar chiseltest.fuzzing.afl.AFLDriver ${FIRRTL} input a2j j2a ${harness} &
+java -cp target/scala-2.12/chisel-fuzzer-assembly-0.1.jar fuzzing.afl.AFLDriver ${FIRRTL} input a2j j2a ${harness} &
 sleep 13s
 # Option 2
-#sbt "runMain chiseltest.fuzzing.afl.AFLDriver src/test/resources/fuzzing/TLI2C.fir input a2j j2a TLUL" &
+#sbt "runMain fuzzing.afl.AFLDriver test/resources/fuzzing/TLI2C.fir input a2j j2a TLUL" &
 #sleep 20s
 
 
@@ -55,6 +55,6 @@ done
 mv temp_out ${OUT}
 
 # Generate coverage results with CoverageAnalysis.scala
-java -cp target/scala-2.12/chiseltest-assembly-0.5-SNAPSHOT.jar chiseltest.fuzzing.coverage.CoverageAnalysis ${FIRRTL} ${OUT} ${harness}
+java -cp target/scala-2.12/chisel-fuzzer-assembly-0.1.jar fuzzing.coverage.CoverageAnalysis ${FIRRTL} ${OUT} ${harness}
 
 exit 0
