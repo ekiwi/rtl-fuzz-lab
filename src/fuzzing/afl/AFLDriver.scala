@@ -29,7 +29,8 @@
 
 package fuzzing.afl
 
-import fuzzing.annotations.{DoNotCoverAnnotation, MuxToggleOpAnnotation}
+import fuzzing.coverage.DoNotCoverAnnotation
+import fuzzing.annotations.MuxToggleOpAnnotation
 import fuzzing.targets.{FIRRTLHandler, FuzzTarget}
 import chiseltest.WriteVcdAnnotation
 import firrtl.annotations.{Annotation, CircuitTarget}
