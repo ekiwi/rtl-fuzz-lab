@@ -1,0 +1,19 @@
+{"coverage_data": 
+[	{"filename": "id:000000,orig:TLI2C_longSeed.hwf,1628903440707", "creation_time": 0.0, "cumulative_coverage": 0.5542168674698795}, 
+	{"filename": "id:000001,src:000000,op:flip1,pos:5,+cov,1628903445327", "creation_time": 4.62, "cumulative_coverage": 0.5662650602409639}, 
+	{"filename": "id:000002,src:000000,op:flip1,pos:13,+cov,1628903445567", "creation_time": 4.86, "cumulative_coverage": 0.6144578313253012}, 
+	{"filename": "id:000003,src:000000,op:flip1,pos:36,+cov,1628903446129", "creation_time": 5.422, "cumulative_coverage": 0.6385542168674698}, 
+	{"filename": "id:000004,src:000000,op:flip1,pos:36,+cov,1628903446162", "creation_time": 5.455, "cumulative_coverage": 0.6506024096385542}, 
+	{"filename": "id:000005,src:000000,op:flip2,pos:14,+cov,1628903447229", "creation_time": 6.522, "cumulative_coverage": 0.6746987951807228}, 
+	{"filename": "id:000006,src:000000,op:flip4,pos:36,+cov,1628903449115", "creation_time": 8.408, "cumulative_coverage": 0.6987951807228916}, 
+	{"filename": "id:000007,src:000000,op:int8,pos:36,val:+64,+cov,1628903467908", "creation_time": 27.201, "cumulative_coverage": 0.7228915662650602}, 
+	{"filename": "id:000008,src:000002,op:flip1,pos:28,+cov,1628903511754", "creation_time": 71.047, "cumulative_coverage": 0.7710843373493976}, 
+	{"filename": "id:000009,src:000002,op:flip4,pos:28,+cov,1628903514150", "creation_time": 73.443, "cumulative_coverage": 0.8072289156626506}, 
+	{"filename": "id:000010,src:000002,op:int8,pos:28,val:+64,+cov,1628903531273", "creation_time": 90.566, "cumulative_coverage": 0.8433734939759037}, 
+	{"filename": "id:000011,src:000005,op:flip1,pos:18,+cov,1628903541835", "creation_time": 101.128, "cumulative_coverage": 0.8674698795180723}, 
+	{"filename": "id:000012,src:000005,op:flip4,pos:18,+cov,1628903544767", "creation_time": 104.06, "cumulative_coverage": 0.9156626506024096}, 
+	{"filename": "id:000013,src:000005,op:int8,pos:18,val:+64,+cov,1628903563786", "creation_time": 123.079, "cumulative_coverage": 0.927710843373494}, 
+	{"filename": "id:000014,src:000005,op:havoc,rep:8,+cov,1628903575358", "creation_time": 134.651, "cumulative_coverage": 0.9397590361445783}, 
+	{"filename": "id:000015,src:000014+000004,op:splice,rep:16,+cov,1628904089754", "creation_time": 649.047, "cumulative_coverage": 0.9518072289156626}
+], 
+"end_time": 1204.816}

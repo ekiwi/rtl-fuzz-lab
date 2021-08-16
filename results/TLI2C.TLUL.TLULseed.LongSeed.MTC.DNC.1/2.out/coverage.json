@@ -1,0 +1,17 @@
+{"coverage_data": 
+[	{"filename": "id:000000,orig:TLI2C_longSeed.hwf,1628904680471", "creation_time": 0.0, "cumulative_coverage": 0.5542168674698795}, 
+	{"filename": "id:000001,src:000000,op:flip1,pos:5,+cov,1628904685133", "creation_time": 4.662, "cumulative_coverage": 0.5662650602409639}, 
+	{"filename": "id:000002,src:000000,op:flip1,pos:13,+cov,1628904685339", "creation_time": 4.868, "cumulative_coverage": 0.6144578313253012}, 
+	{"filename": "id:000003,src:000000,op:flip1,pos:36,+cov,1628904685888", "creation_time": 5.417, "cumulative_coverage": 0.6385542168674698}, 
+	{"filename": "id:000004,src:000000,op:flip1,pos:36,+cov,1628904685920", "creation_time": 5.449, "cumulative_coverage": 0.6506024096385542}, 
+	{"filename": "id:000005,src:000000,op:flip2,pos:14,+cov,1628904686986", "creation_time": 6.515, "cumulative_coverage": 0.6746987951807228}, 
+	{"filename": "id:000006,src:000000,op:flip4,pos:36,+cov,1628904688700", "creation_time": 8.229, "cumulative_coverage": 0.6987951807228916}, 
+	{"filename": "id:000007,src:000000,op:int8,pos:36,val:+64,+cov,1628904708885", "creation_time": 28.414, "cumulative_coverage": 0.7228915662650602}, 
+	{"filename": "id:000008,src:000003,op:flip1,pos:13,+cov,1628904753715", "creation_time": 73.244, "cumulative_coverage": 0.7710843373493976}, 
+	{"filename": "id:000009,src:000005,op:flip1,pos:18,+cov,1628904790567", "creation_time": 110.096, "cumulative_coverage": 0.7951807228915663}, 
+	{"filename": "id:000010,src:000005,op:flip4,pos:18,+cov,1628904793253", "creation_time": 112.782, "cumulative_coverage": 0.8795180722891566}, 
+	{"filename": "id:000011,src:000005,op:int8,pos:18,val:+64,+cov,1628904813085", "creation_time": 132.614, "cumulative_coverage": 0.927710843373494}, 
+	{"filename": "id:000012,src:000009,op:flip1,pos:22,+cov,1628904894769", "creation_time": 214.298, "cumulative_coverage": 0.9397590361445783}, 
+	{"filename": "id:000013,src:000012+000011,op:splice,rep:8,+cov,1628905271738", "creation_time": 591.267, "cumulative_coverage": 0.9518072289156626}
+], 
+"end_time": 1204.799}
