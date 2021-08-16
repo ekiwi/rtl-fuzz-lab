@@ -53,11 +53,13 @@ class RfuzzTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget
   private val originalRFUZZinputSize = ((((inputBits + 7) / 8) + 8 - 1) / 8) * 8
 
   private def pop(input: java.io.InputStream): Array[Byte] = {
+    val r = input.readNBytes(inputSize)
+    if (r.size == inputSize) { r } else { Array.emptyByteArray }
+  }
+
+  private def popRFUZZ(input: java.io.InputStream): Array[Byte] = {
     val r = input.readNBytes(originalRFUZZinputSize)
     if (r.size == originalRFUZZinputSize) { r } else { Array.emptyByteArray }
-
-//    val r = input.readNBytes(inputSize)
-//    if (r.size == inputSize) { r } else { Array.emptyByteArray }
   }
 
   private def getCoverage: Seq[Byte] = {
@@ -109,7 +111,7 @@ class RfuzzTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget
 
     var inputBytes = pop(input)
     while (inputBytes.nonEmpty) {
-      applyRfuzzInputs(inputBytes)
+      applyInputs(inputBytes)
       step()
       inputBytes = pop(input)
     }
