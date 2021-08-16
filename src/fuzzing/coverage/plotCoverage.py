@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 from scipy.interpolate import interp1d
+from matplotlib.lines import Line2D
+
+# Code for manually adding labels modeled from following:
+# https://stackoverflow.com/questions/39500265/manually-add-legend-items-python-matplotlib
 
 """Plot inputted JSON files"""
 def plotJSON(do_average, JSON_filepaths):
@@ -18,7 +22,16 @@ def plotJSON(do_average, JSON_filepaths):
     plt.yticks([x for x in range(0, 110, 10)])
     plt.xlabel("Seconds")
     plt.xlim([-10, 1200])
-    plt.legend()
+
+    colors = ['darkorange', 'royalblue', 'green']
+    lines = [Line2D([0], [0], color=c, linewidth=2, linestyle='-') for c in colors]
+    labels = ['Zeros Seed', 'Relevant Seed', 'Zeros Seed -- Only Valid']
+    manualLegend = False
+    if manualLegend:
+        plt.legend(lines, labels)
+    else:
+        plt.legend()
+
     plt.savefig("coveragePlot.png")
     plt.show()
 
