@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script automates running the AFL fuzz script.
+# Automates running the AFL fuzz script.
 # Takes in the desired output folder and number of minutes to fuzz.
 
 if ! [ $# -eq 4 ] ; then
@@ -36,8 +36,9 @@ sbt assembly
 echo ""
 echo "Calling AFLDriver on: ${FIRRTL} input a2j j2a ${harness}"
 echo ""
+
 # Option 1 (preferred due to slightly better memory usage and possible slightly better execution speed)
-java -cp target/scala-2.12/chisel-fuzzer-assembly-0.1.jar fuzzing.afl.AFLDriver ${FIRRTL} input a2j j2a ${harness} &
+java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver ${FIRRTL} input a2j j2a ${harness} &
 sleep 13s
 # Option 2
 #sbt "runMain fuzzing.afl.AFLDriver test/resources/fuzzing/TLI2C.fir input a2j j2a TLUL" &
@@ -55,6 +56,6 @@ done
 mv temp_out ${OUT}
 
 # Generate coverage results with CoverageAnalysis.scala
-java -cp target/scala-2.12/chisel-fuzzer-assembly-0.1.jar fuzzing.coverage.CoverageAnalysis ${FIRRTL} ${OUT} ${harness}
+java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.coverage.CoverageAnalysis ${FIRRTL} ${OUT} ${harness}
 
 exit 0
