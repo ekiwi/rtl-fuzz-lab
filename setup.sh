@@ -16,6 +16,7 @@ fi
 
 cd fuzzing
 make
-cd ..
+
+echo "SETUP COMPLETE"
 
 exit 0
