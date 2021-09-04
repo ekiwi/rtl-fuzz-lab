@@ -1,4 +1,4 @@
-name := "chisel-fuzzer"
+name := "rtl-fuzz-lab"
 version := "0.1"
 scalaVersion := "2.12.13"
 crossScalaVersions := Seq("2.12.13", "2.13.5")
