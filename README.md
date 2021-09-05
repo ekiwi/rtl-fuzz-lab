@@ -2,6 +2,8 @@
 
 RTLFuzzLab is a software designed to allow for easy experimentation with Coverage Directed Mutational Fuzz Testing on RTL designs.
 
+[Software framework visualization](https://github.com/ekiwi/rtl-fuzz-lab/files/7111369/Slide5.pdf)
+
 ## Installation
 
 ### Get AFL Fork
