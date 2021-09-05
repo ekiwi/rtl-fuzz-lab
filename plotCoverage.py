@@ -20,7 +20,6 @@ def plot_json(do_average, json_paths):
     plt.ylabel("Cumulative coverage %")
     plt.yticks([x for x in range(0, 110, 10)])
     plt.xlabel("Seconds")
-    plt.xlim([-10, 1200])
 
     colors = ['darkorange', 'royalblue', 'green']
     lines = [Line2D([0], [0], color=c, linewidth=2, linestyle='-') for c in colors]
