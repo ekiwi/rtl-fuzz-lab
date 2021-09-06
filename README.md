@@ -1,8 +1,8 @@
-# RTLFuzzLab: Building A Modular Open-Source Hardware Fuzzing Framework
+# RTLFuzzLab: a modular hardware fuzzing framework
 
-RTLFuzzLab is a software designed to allow for easy experimentation with Coverage Directed Mutational Fuzz Testing on RTL designs.
+RTLFuzzLab is designed to allow for easy experimentation with Coverage Directed Mutational Fuzz Testing on RTL designs.
 
-[Software framework visualization](https://github.com/ekiwi/rtl-fuzz-lab/files/7111369/Slide5.pdf)
+![Software framework visualization](overview.svg)
 
 ## Installation
 
@@ -12,10 +12,11 @@ git clone https://github.com/ekiwi/AFL
 cd AFL
 make
 ```
-This AFL fork is logically identical to AFL. The only addition is birth times to the names of generated inputs for improved plotting.
+This AFL fork is functionally identical to upstream AFL.
+Our version produces some additional meta-data that is used to produce better plots.
 
 
-### Download repo
+### Clone repo
 ```.sh
 git clone https://github.com/ekiwi/rtl-fuzz-lab
 ```
@@ -24,6 +25,8 @@ git clone https://github.com/ekiwi/rtl-fuzz-lab
 ```.sh
 ./setup.sh
 ```
+
+This will create two fifos (`a2j` and `j2a`), a `seeds` directory and compile the proxy to interface with AFL.
 
 ## Usage
 ### Populate seeds folder
@@ -35,7 +38,7 @@ cp src/fuzzing/seeds/binary/TLI2C_shortSeed.hwf seeds
 ```
 
 ### Run fuzzing script
-Takes in arguments: FIRRTL Harness Minutes Out_folder Iterations AFL_path
+Takes in arguments: `FIRRTL Harness Minutes Out_folder Iterations AFL_path`
 
 Example:
 ```.sh
@@ -51,7 +54,7 @@ Example:
 
 > Current available harness options: rfuzz (direct), tlul (bus-centric)
 
-> The tlul harness should only be used on TL FIRRTL designs, as it is bus-central to TL-UL designs
+> The tlul harness should only be used on TL FIRRTL designs, as it is bus-centric to TL-UL designs
 
 * Minutes: Number of minutes to fuzz for (per fuzzing iteration)
 * Out_folder: Folder in which to output fuzzing results
@@ -61,7 +64,7 @@ Example:
 
 
 ### Plot results
-Takes in arguments: do_average PATH [PATH ...]
+Takes in arguments: `do_average PATH [PATH ...]`
 
 Example:
 ```.sh
@@ -73,5 +76,8 @@ python3 plotCoverage.py true results/example
 > Produces png of plot at coveragePlot.png
 
 
+## Acknoledgement
+Integrating AFL with our Scala based fuzz bench would not have been possible without the awesome AFL proxy infrastructure from the [JQF](https://github.com/rohanpadhye/JQF) project.
+
 ## License
-This code is open-source under a BSD license.
+This code is open-source under a BSD license. See the `LICENSE` file for more information.
