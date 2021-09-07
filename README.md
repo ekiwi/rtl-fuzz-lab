@@ -6,6 +6,14 @@ RTLFuzzLab is designed to allow for easy experimentation with Coverage Directed 
 
 ## Installation
 
+### Dependencies
+The following dependencies are required to run this software:
+* make
+* gcc
+* java
+* sbt
+
+
 ### Get AFL Fork
 ```.sh
 git clone https://github.com/ekiwi/AFL
