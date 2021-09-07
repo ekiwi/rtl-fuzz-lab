@@ -21,11 +21,10 @@ Our version produces some additional meta-data that is used to produce better pl
 git clone https://github.com/ekiwi/rtl-fuzz-lab
 ```
 
-### Run setup script
+### Run setup script (setup.sh)
 ```.sh
 ./setup.sh
 ```
-
 This will create two fifos (`a2j` and `j2a`), a `seeds` directory and compile the proxy to interface with AFL.
 
 ## Usage
@@ -37,13 +36,14 @@ Example:
 cp src/fuzzing/seeds/binary/TLI2C_shortSeed.hwf seeds
 ```
 
-### Run fuzzing script
+### Run fuzzing script (fuzz.sh)
 Takes in arguments: `FIRRTL Harness Minutes Out_folder Iterations AFL_path`
 
 Example:
 ```.sh
 ./fuzz.sh test/resources/fuzzing/TLI2C.fir tlul 1 results/example 3 ~/AFL
 ```
+This will set certain environment variables for AFL. Modify the script to manually control AFL.
 
 #### Arguments:
 * FIRRTL: FIRRTL design which is to be fuzzed

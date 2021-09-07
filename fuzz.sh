@@ -36,7 +36,13 @@ fi
 
 
 # Creates jar file to allow execution of Scala code using terminal commands
+echo "Creating jar file..."
 sbt assembly
+
+
+# Sets environment variables needed for AFL to run. Comment these lines out to control AFL manually.
+export AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
+export AFL_SKIP_CPUFREQ=1
 
 
 # Performs ITERATIONS fuzzing runs for given parameters
