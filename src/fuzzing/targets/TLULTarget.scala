@@ -152,6 +152,8 @@ class TLULTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget 
 
   private val fuzzInputs = info.inputs.filterNot { case (n, _) => n == MetaReset || n == "reset" }
   private def ClearRequest(): Unit = {
+    fuzzInputs.foreach { case (name, size) => println(name + " of size " + size.toString + " is poked with value: " + dut.peek(name).toString) }
+    println()
     fuzzInputs.foreach { case (name, _) => dut.poke(name, 0) }
     dut.poke("auto_in_d_ready", 1)
   }
