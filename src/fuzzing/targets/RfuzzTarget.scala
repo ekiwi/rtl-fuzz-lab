@@ -73,10 +73,10 @@ class RfuzzTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget
       val mask = (BigInt(1) << bits) - 1
       val value = input & mask
       input = input >> bits
-      println(name + " is poked with value: " + value.toString)
+      println("'" + name + "'", bits.toString, value.toString)
       dut.poke(name, value)
     }
-    println()
+    println("---")
   }
 
   private def applyRfuzzInputs(bytes: Array[Byte]): Unit = {

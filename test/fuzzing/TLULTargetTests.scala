@@ -53,11 +53,11 @@ class TLULTargetTests extends AnyFlatSpec {
 
 
   it should "execute an inputted file" in {
-    val fuzzer = FIRRTLHandler.firrtlToTarget("test/resources/fuzzing/TLI2C.fir", "tlul", "test_run_dir/TLUL_input_file", Seq(WriteVcdAnnotation))
+    val fuzzer = FIRRTLHandler.firrtlToTarget("test/resources/fuzzing/TLI2C.fir", "rfuzz", "test_run_dir/TLUL_input_file", Seq(WriteVcdAnnotation))
 
     //Read in generated input file as bytes
     //val inputPath = "seeds/auto_ecb_128bit_encrypt_2blocks.hwf"
-    val inputPath = "src/fuzzing/seeds/binary/test.hwf"
+    val inputPath = "src/fuzzing/seeds/binary/rfuzz_test.hwf"
     val inputFile = os.pwd / os.RelPath(inputPath)
     val input = os.read.inputStream(inputFile)
 
