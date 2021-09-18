@@ -68,7 +68,7 @@ class RfuzzTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget
 
   private val fuzzInputs = info.inputs.filterNot { case (n, _) => n == MetaReset || n == "reset" }
   private def applyInputs(bytes: Array[Byte]): Unit = {
-    var input: BigInt = bytes.zipWithIndex.map { case (b, i) => BigInt(b) << (i * 8) }.reduce(_ | _)
+    var input: BigInt = bytes.zipWithIndex.map { case (b, i) => (0xff & BigInt(b)) << (i * 8) }.reduce(_ | _)
     fuzzInputs.foreach { case (name, bits) =>
       val mask = (BigInt(1) << bits) - 1
       val value = input & mask

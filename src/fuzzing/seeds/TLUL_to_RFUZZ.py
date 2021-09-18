@@ -13,28 +13,30 @@ def main(input_file):
     allInsts = [cycle.split('\n') for cycle in cycles]
     parsed_instructions = [[make_tuple(inst) for inst in cycle if inst] for cycle in allInsts]
 
-    cumulative_size = 0
-    binary = 0
-    for i, cycle in enumerate(parsed_instructions):
+    allCycleBinary = []
+    for cycle in parsed_instructions:
+        binary = 0
+        cumulative_size = 0
         for inst in cycle:
             _, size, value = inst
             mask = (1 << size) - 1
             binary = ((value & mask) << cumulative_size) | binary
             cumulative_size += size
-        cumulative_size = bytesPerCycle*8*(i+1)
+        cumulative_size = bytesPerCycle*8
 
-    zero_padding = cumulative_size - len(bin(binary)[2:])
-    full_value = "0"*zero_padding + bin(binary)[2:]
-    binary = [full_value[i:i+8] for i in range(0, len(full_value), 8)]
-    binary.reverse()
-    binary = ''.join(binary)
-    binary = int(binary, 2)
+        zero_padding = cumulative_size - len(bin(binary)[2:])
+        full_value = "0"*zero_padding + bin(binary)[2:]
+        binary = [full_value[i:i+8] for i in range(0, len(full_value), 8)]
+        binary.reverse()
+        binary = ''.join(binary)
+        allCycleBinary.append(binary)
 
+    finalBinary = int(''.join(allCycleBinary), 2)
 
     output_file = "binary/rfuzz_test.hwf"
     with open(output_file, "wb") as file:
-        print(binary.to_bytes(21*len(cycles), byteorder='big'))
-        file.write(binary.to_bytes(21*len(cycles), byteorder='big'))
+        print(finalBinary.to_bytes(21*len(cycles), byteorder='big'))
+        file.write(finalBinary.to_bytes(21*len(cycles), byteorder='big'))
 
 def ceil_8(num):
     remainder = num % 8

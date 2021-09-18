@@ -10,12 +10,16 @@
 # DATA_OUT_LINE_START_2=-4
 ################################################################################
 # Wait a 8 clk cycles for AES to go into IDLE state
-- {opcode: wait, addr: 0, data: 0}
-- {opcode: wait, addr: 0, data: 0}
-- {opcode: wait, addr: 0, data: 0}
-- {opcode: wait, addr: 0, data: 0}
-- {opcode: wait, addr: 0, data: 0}
-- {opcode: wait, addr: 0, data: 0}
+- {opcode: write, addr: 0x10016074, data: 0x82}
+
+# Read from output data registers
+- {opcode: read, addr: 0x10016070, data: 0x0}
+- {opcode: write, addr: 0x10016004, data: 0xDEADBEEF}
+- {opcode: write, addr: 0x10016074, data: 0x82}
+
+# Read from output data registers
+- {opcode: read, addr: 0x10016070, data: 0x0}
+- {opcode: write, addr: 0x10016004, data: 0xDEADBEEF}
 
 # Intilize shadowed CTRL register
 - {opcode: write, addr: 0x10016074, data: 0x82}
