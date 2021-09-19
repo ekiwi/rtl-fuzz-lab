@@ -10,8 +10,12 @@ RTLFuzzLab is designed to allow for easy experimentation with Coverage Directed 
 The following dependencies are required to run this software:
 * make
 * gcc
+* g++
 * java
 * sbt
+* verilator
+* matplotlib
+* scipy
 
 
 ### Get AFL Fork
