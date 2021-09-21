@@ -26,12 +26,12 @@ class LineCoverageTest extends AnyFlatSpec with ChiselScalatestTester {
     val offset = 6
     val expected = List(
       // Test1Module
-      (5,6), (7,6),
+      (5,5), (7,5),
       (8,0), // apparently `a` is never four
-      (11,6), (12,1), (14,5), (17,6),
-      (21,6), (26,6), (27,6), (30,6), (31,6), (32,6), (33,6),
+      (11,5), (12,1), (14,4), (17,5),
+      (21,5), (26,5), (27,5), (30,5), (31,5), (32,5), (33,5),
       // SubModule1 (instantiated twice!)
-      (39,12),
+      (39,10),
     )
 
     assert(file.lines == expected.map(e => (e._1 + offset, e._2)))
@@ -47,7 +47,7 @@ class LineCoverageTest extends AnyFlatSpec with ChiselScalatestTester {
     // check some lines
     val offset = 6 + 2 // the 2 accounts for the table headers
     assert(lines(0 + offset).startsWith((1 + offset - 2) + " |     | class Test1Module("))
-    assert(lines(4 + offset).startsWith((5 + offset - 2) + " |   6 |   b := 0.U // line 5"))
+    assert(lines(4 + offset).startsWith((5 + offset - 2) + " |   5 |   b := 0.U // line 5"))
     assert(lines(7 + offset).startsWith((8 + offset - 2) + " |   0 |     b := 1.U"))
 
     // this is how you would print the whole report
