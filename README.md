@@ -37,11 +37,11 @@ This will create two fifos (`a2j` and `j2a`), a `seeds` directory and compile th
 
 ## Usage
 ### Populate seeds folder
-Existing seeds are available in the folder: `rtl-fuzz-lab/src/fuzzing/seeds/binary`
+Existing seeds are available in the folder: `rtl-fuzz-lab/src/fuzzing/template_seeds/binary`
 
 Example:
 ```.sh
-cp src/fuzzing/seeds/binary/TLI2C_shortSeed.hwf seeds
+cp src/fuzzing/template_seeds/binary/TLI2C_shortSeed.hwf seeds
 ```
 
 ### Run fuzzing script (fuzz.sh)
