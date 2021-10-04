@@ -57,7 +57,7 @@ class TLULTargetTests extends AnyFlatSpec {
 
     //Read in generated input file as bytes
     //val inputPath = "seeds/auto_ecb_128bit_encrypt_2blocks.hwf"
-    val inputPath = "src/fuzzing/seeds/binary/rfuzz_test.hwf"
+    val inputPath = "src/fuzzing/template_seeds/binary/rfuzz_test.hwf"
     val inputFile = os.pwd / os.RelPath(inputPath)
     val input = os.read.inputStream(inputFile)
 

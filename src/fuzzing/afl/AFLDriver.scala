@@ -67,7 +67,7 @@ object AFLDriver extends App {
 
   //Generating fuzz target
   val targetKind = args(4)
-  val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(firrtlSrc, targetKind, "test_run_dir/" + targetKind + "_with_afl", annos = targetAnnos)
+  val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(targetKind, "test_run_dir/" + targetKind + "_with_afl", annos = targetAnnos)
 
   println("Ready to fuzz! Waiting for someone to open the fifos!")
   AFLProxy.fuzz(target, a2jPipe, j2aPipe, inputFile)

@@ -3,9 +3,11 @@ package fuzzing
 import firrtl.AnnotationSeq
 import firrtl.annotations._
 import firrtl.options.{DuplicateHandling, ExceptOnError, ShellOption}
+//import fuzzing.annotations.{CoverageMetric, Directed, FIRRTL, FeedbackCap, GenerateVCD, Harness, Seed}
 import org.scalatest.freespec.AnyFreeSpec
 import scopt.OptionParser
 
+//import scala.io.Source
 case object OptionA extends NoTargetAnnotation
 case class OptionB(i: Int) extends NoTargetAnnotation
 case class OptionC(s: String) extends NoTargetAnnotation
@@ -45,6 +47,15 @@ class AnnotationExamples extends AnyFreeSpec {
     assert(json.trim == expected.trim)
   }
 
+  "serialize to JSON, config file" in {
+    //val annos = Seq(FIRRTL("test/resources/fuzzing/TLI2C.fir"), afl.Harness("tlul"), Seed("seeds/TLI2C_longSeed.hwf"),
+      //CoverageMetric("MuxToggleCoverage"), Directed(true), FeedbackCap(1), GenerateVCD(false))
+
+    //val json = JsonProtocol.serialize(annos)
+    //print(json)
+  }
+
+
   "parse from JSON" in {
     val json =
       """[{"class": "fuzzing.OptionA$"},
@@ -57,6 +68,13 @@ class AnnotationExamples extends AnyFreeSpec {
     assert(annos.collectFirst{ case OptionC(s) => s}.getOrElse("") == "test bla bla")
   }
 
+  "parse from JSON, config file" in {
+    //val file = Source.fromFile("config.json")
+    //val json = file.getLines.mkString
+    //file.close
+    //val annos = JsonProtocol.deserialize(json)
+    //print(annos)
+  }
 
   "parse command line arguments" in {
     val options = Seq(
