@@ -4,13 +4,13 @@ import firrtl.AnnotationSeq
 import firrtl.annotations.NoTargetAnnotation
 import firrtl.options.{DuplicateHandling, ExceptOnError, ShellOption}
 import firrtl.stage.FirrtlSourceAnnotation
-import fuzzing.annotations.MuxToggleOpAnnotation
 import scopt.OptionParser
 import chiseltest.WriteVcdAnnotation
 
 case class Harness(name: String) extends NoTargetAnnotation
 case object Directed extends NoTargetAnnotation
 case class FeedbackCap(cap: Int) extends NoTargetAnnotation
+case class MuxToggleOpAnnotation(fullToggle: Boolean) extends NoTargetAnnotation
 
 class FuzzingArgumentParser extends OptionParser[AnnotationSeq]("fuzzer") with DuplicateHandling with ExceptOnError {
 
@@ -49,9 +49,9 @@ class FuzzingArgumentParser extends OptionParser[AnnotationSeq]("fuzzer") with D
       helpValueName = Some("<i>")
     ),
     //MuxToggleCoverage
-    new ShellOption[Unit](
-      longOption = "Feedback",
-      toAnnotationSeq = _ => Seq(MuxToggleOpAnnotation(true)),
+    new ShellOption[Boolean](
+      longOption = "MuxToggleCoverage",
+      toAnnotationSeq = input => Seq(MuxToggleOpAnnotation(input)),
       helpText = "",
       helpValueName = Some("<i>")
     ),

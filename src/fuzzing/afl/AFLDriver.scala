@@ -30,10 +30,10 @@
 package fuzzing.afl
 
 import fuzzing.coverage.DoNotCoverAnnotation
-import fuzzing.annotations.MuxToggleOpAnnotation
 import fuzzing.targets.{FIRRTLHandler, FuzzTarget}
 import chiseltest.WriteVcdAnnotation
 import firrtl.annotations.{Annotation, CircuitTarget}
+import firrtl.stage.FirrtlSourceAnnotation
 
 import java.io.{File, InputStream, OutputStream, PrintWriter}
 
@@ -42,19 +42,23 @@ import java.io.{File, InputStream, OutputStream, PrintWriter}
   *  Based on code written by Rohan Padhye and Caroline Lemieux for the JQF project
   */
 object AFLDriver extends App {
+  val parser = new FuzzingArgumentParser
+  val argAnnos = parser.parse(args, Seq()).get
   var targetAnnos = Seq[Annotation]()
-  targetAnnos = targetAnnos ++ Seq[Annotation](
-    DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
-    DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75"))
-  )
-  targetAnnos = targetAnnos ++ Seq(MuxToggleOpAnnotation(false))
 
-  val writeVCD = false
-  if (writeVCD) {
-    targetAnnos = targetAnnos ++ Seq(WriteVcdAnnotation)
+  //Parse args
+  val targetKind = argAnnos.collectFirst {case Harness(i) => i}.getOrElse("")
+  if (argAnnos.contains(Directed)) {
+    targetAnnos = targetAnnos ++ Seq[Annotation](
+      DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
+      DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75"))
+    )
   }
-  
-  val targetKind = args(4)
+  targetAnnos = targetAnnos ++ argAnnos.collectFirst {case FirrtlSourceAnnotation(i) => FirrtlSourceAnnotation(i)}
+  targetAnnos = targetAnnos ++ argAnnos.collectFirst {case WriteVcdAnnotation => WriteVcdAnnotation}
+  targetAnnos = targetAnnos ++ argAnnos.collectFirst {case MuxToggleOpAnnotation(i) => MuxToggleOpAnnotation(i)}
+
+
   val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(targetKind, "test_run_dir/" + targetKind + "_with_afl", targetAnnos)
 
   println("Ready to fuzz! Waiting for someone to open the fifos!")

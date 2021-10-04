@@ -1,6 +1,6 @@
 package fuzzing.coverage
 
-import fuzzing.annotations.MuxToggleOpAnnotation
+import fuzzing.afl.MuxToggleOpAnnotation
 import fuzzing.targets.{FIRRTLHandler, FuzzTarget}
 import chiseltest.WriteVcdAnnotation
 import firrtl.annotations.{Annotation, CircuitTarget}
