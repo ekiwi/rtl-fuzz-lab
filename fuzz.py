@@ -58,7 +58,7 @@ for i in range(args.iterations):
                         FIRRTL = args.firrtl, HARNESS = args.harness))
 
     # Option 1 (preferred due to slightly better memory usage and possible slightly better execution speed)
-    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver {FIRRTL} input a2j j2a {HARNESS} & sleep 14s".format(HARNESS = args.harness, FIRRTL=args.firrtl))
+    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver -d {FIRRTL} input a2j j2a {HARNESS} & sleep 14s".format(HARNESS = args.harness, FIRRTL=args.firrtl))
 
     os.system('timeout $time_string "{AFL_PATH}"/afl-fuzz -i seeds -o temp_out -f input -- ./fuzzing/afl-proxy a2j j2a log'.format(AFL_PATH=args.AFL_PATH))
 
