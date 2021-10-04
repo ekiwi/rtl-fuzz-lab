@@ -6,23 +6,8 @@ import chiseltest.WriteVcdAnnotation
 import firrtl.annotations.{Annotation, CircuitTarget}
 
 object CoverageAnalysis extends App {
-
-  def usage = "Usage: java " + this.getClass + " FIRRTL AFL_OUT_FOLDER TARGET_KIND"
-  require(args.length == 3, usage + "\nNOT: " + args.mkString(" "))
-
-  //Parse arguments to scripts
-  val firrtlSrc = args(0)
-
-  val outFolder = os.pwd / os.RelPath(args(1))
-  val queue = outFolder / os.RelPath("queue")
-  val end_time_file = outFolder / os.RelPath("end_time")
-  val outputJSON = outFolder / os.RelPath("coverage.json")
-
-  //Select and instrument chosen fuzzer
-  println(s"Loading and instrumenting $firrtlSrc...")
-
-  //Declare annotations for fuzzing
-  var targetAnnos = Seq[Annotation](
+  var targetAnnos = Seq[Annotation]()
+  targetAnnos = Seq[Annotation](
     DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
     DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75"))
   )
@@ -33,9 +18,15 @@ object CoverageAnalysis extends App {
     targetAnnos = targetAnnos ++ Seq(WriteVcdAnnotation)
   }
 
-  //Generating fuzz target
   val targetKind = args(2)
-  val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(firrtlSrc, targetKind, "test_run_dir/" + targetKind + "_with_afl", annos = targetAnnos)
+  val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(targetKind, "test_run_dir/" + targetKind + "_with_afl", targetAnnos)
+
+
+  val outFolder = os.pwd / os.RelPath(args(1))
+  val queue = outFolder / os.RelPath("queue")
+  val end_time_file = outFolder / os.RelPath("end_time")
+  val outputJSON = outFolder / os.RelPath("coverage.json")
+
 
   println("Generating coverage from provided inputs. Output to file " + outputJSON)
 

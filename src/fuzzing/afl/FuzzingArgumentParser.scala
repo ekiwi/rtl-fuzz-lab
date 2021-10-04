@@ -4,17 +4,18 @@ import firrtl.AnnotationSeq
 import firrtl.annotations.NoTargetAnnotation
 import firrtl.options.{DuplicateHandling, ExceptOnError, ShellOption}
 import firrtl.stage.FirrtlSourceAnnotation
+import fuzzing.annotations.MuxToggleOpAnnotation
 import scopt.OptionParser
-import treadle.WriteVcdAnnotation
+import chiseltest.WriteVcdAnnotation
 
 case class Harness(name: String) extends NoTargetAnnotation
 case object Directed extends NoTargetAnnotation
-case class FeedbackCap(cap: String) extends NoTargetAnnotation
+case class FeedbackCap(cap: Int) extends NoTargetAnnotation
 
 class FuzzingArgumentParser extends OptionParser[AnnotationSeq]("fuzzer") with DuplicateHandling with ExceptOnError {
 
-  private val options = Seq(
-    //FIRRTL TODO: Can replace this with --firtl-source already implemented?
+  private val arguments = Seq(
+    //FIRRTL TODO: Can replace this with --firrtl-source already implemented?
     new ShellOption[String](
       longOption = "FIRRTL",
       toAnnotationSeq = input => Seq(FirrtlSourceAnnotation(input)),
@@ -29,31 +30,33 @@ class FuzzingArgumentParser extends OptionParser[AnnotationSeq]("fuzzer") with D
       helpValueName = Some("<str>")
     ),
     //Directedness
-    new ShellOption[String](
+    new ShellOption[Unit](
       longOption = "Directedness",
       toAnnotationSeq = _ => Seq(Directed),
-      helpText = "",
-      helpValueName = Some("<str>")
+      helpText = ""
     ),
     //VCD
-    new ShellOption[String](
+    new ShellOption[Unit](
       longOption = "VCD",
       toAnnotationSeq = _ => Seq(WriteVcdAnnotation),
       helpText = "",
-      helpValueName = Some("<str>")
     ),
     //Feedback cap
-    new ShellOption[String](
+    new ShellOption[Int](
       longOption = "Feedback",
       toAnnotationSeq = input => Seq(FeedbackCap(input)),
       helpText = "",
-      helpValueName = Some("<str>")
+      helpValueName = Some("<i>")
     ),
-
-
-
+    //MuxToggleCoverage
+    new ShellOption[Unit](
+      longOption = "Feedback",
+      toAnnotationSeq = _ => Seq(MuxToggleOpAnnotation(true)),
+      helpText = "",
+      helpValueName = Some("<i>")
+    ),
   )
 
-  options.foreach(_.addOption(this))
+  arguments.foreach(_.addOption(this))
   this.help("help").text("prints this usage text")
 }

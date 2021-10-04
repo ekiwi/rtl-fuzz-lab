@@ -42,19 +42,8 @@ import java.io.{File, InputStream, OutputStream, PrintWriter}
   *  Based on code written by Rohan Padhye and Caroline Lemieux for the JQF project
   */
 object AFLDriver extends App {
-  def usage = "Usage: java " + this.getClass + " FIRRTL TEST_INPUT_FILE AFL_TO_JAVA_PIPE JAVA_TO_AFL_PIPE TARGET_KIND"
-  require(args.length == 5, usage + "\nNOT: " + args.mkString(" "))
-
-  val firrtlSrc = args(0)
-  val inputFile = os.pwd / os.RelPath(args(1))
-  val (a2jPipe, j2aPipe) = (os.pwd / args(2), os.pwd / args(3))
-
-  // load the fuzz target
-  println(s"Loading and instrumenting $firrtlSrc...")
-
-  //Declare annotations for fuzzing
-  //var targetAnnos = Seq[Annotation]()
-  var targetAnnos = Seq[Annotation](
+  var targetAnnos = Seq[Annotation]()
+  targetAnnos = targetAnnos ++ Seq[Annotation](
     DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
     DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75"))
   )
@@ -64,12 +53,12 @@ object AFLDriver extends App {
   if (writeVCD) {
     targetAnnos = targetAnnos ++ Seq(WriteVcdAnnotation)
   }
-
-  //Generating fuzz target
+  
   val targetKind = args(4)
-  val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(targetKind, "test_run_dir/" + targetKind + "_with_afl", annos = targetAnnos)
+  val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(targetKind, "test_run_dir/" + targetKind + "_with_afl", targetAnnos)
 
   println("Ready to fuzz! Waiting for someone to open the fifos!")
+  val (a2jPipe, j2aPipe, inputFile) = (os.pwd / "a2j", os.pwd / "j2a", os.pwd / "input")
   AFLProxy.fuzz(target, a2jPipe, j2aPipe, inputFile)
 }
 
