@@ -36,7 +36,7 @@ object CoverageAnalysis extends App {
 
   val files_coverageCounts = queue_files.flatMap { inputFile =>
     val in = os.read.inputStream(inputFile)
-    val (coverage, valid) = target.run(in)
+    val (coverage, valid) = target.run(in, 1)
     in.close()
 
     if (valid) {

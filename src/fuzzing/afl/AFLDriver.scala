@@ -54,22 +54,22 @@ object AFLDriver extends App {
       DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75"))
     )
   }
+  val feedbackCap = argAnnos.collectFirst {case FeedbackCap(i) => i}.getOrElse(0)
   targetAnnos = targetAnnos ++ argAnnos.collectFirst {case FirrtlSourceAnnotation(i) => FirrtlSourceAnnotation(i)}
   targetAnnos = targetAnnos ++ argAnnos.collectFirst {case WriteVcdAnnotation => WriteVcdAnnotation}
   targetAnnos = targetAnnos ++ argAnnos.collectFirst {case MuxToggleOpAnnotation(i) => MuxToggleOpAnnotation(i)}
-
 
   val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(targetKind, "test_run_dir/" + targetKind + "_with_afl", targetAnnos)
 
   println("Ready to fuzz! Waiting for someone to open the fifos!")
   val (a2jPipe, j2aPipe, inputFile) = (os.pwd / "a2j", os.pwd / "j2a", os.pwd / "input")
-  AFLProxy.fuzz(target, a2jPipe, j2aPipe, inputFile)
+  AFLProxy.fuzz(target, feedbackCap, a2jPipe, j2aPipe, inputFile)
 }
 
 /** Communicates with the AFLProxy written by Rohan Padhye and Caroline Lemieux for the JQF project */
 object AFLProxy {
   val CoverageMapSize = 1 << 16
-  def fuzz(target: FuzzTarget, a2jPipe: os.Path, j2aPipe: os.Path, inputFile: os.Path): Unit = {
+  def fuzz(target: FuzzTarget, feedbackCap: Int, a2jPipe: os.Path, j2aPipe: os.Path, inputFile: os.Path): Unit = {
     // connect to the afl proxy
     val proxyInput = os.read.inputStream(a2jPipe)
     val proxyOutput = os.write.outputStream(j2aPipe)
@@ -81,7 +81,7 @@ object AFLProxy {
 
       while (waitForAFL(proxyInput)) {
         val in = os.read.inputStream(inputFile)
-        val (coverage, _) = target.run(in)
+        val (coverage, _) = target.run(in, feedbackCap)
         in.close()
         // println(s"Sending coverage feedback. ($coverage)")
 

@@ -62,8 +62,8 @@ class RfuzzTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget
     if (r.size == originalRFUZZinputSize) { r } else { Array.emptyByteArray }
   }
 
-  private def getCoverage: Seq[Byte] = {
-    dut.getCoverage().map(_._2).map(v => scala.math.min(v, 255).toByte)
+  private def getCoverage(feedbackCap: Int): Seq[Byte] = {
+    dut.getCoverage().map(_._2).map(v => scala.math.min(v, feedbackCap).toByte)
   }
 
   private val fuzzInputs = info.inputs.filterNot { case (n, _) => n == MetaReset || n == "reset" }
@@ -102,7 +102,7 @@ class RfuzzTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget
     }
   }
 
-  override def run(input: java.io.InputStream): (Seq[Byte], Boolean) = {
+  override def run(input: java.io.InputStream, feedbackCap: Int): (Seq[Byte], Boolean) = {
     val start = System.nanoTime()
     setInputsToZero()
     metaReset()
@@ -119,7 +119,7 @@ class RfuzzTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget
     }
 
     val startCoverage = System.nanoTime()
-    var c = getCoverage
+    var c = getCoverage(feedbackCap)
 
     if (!isValid && !acceptInvalid) {
       c = Seq.fill[Byte](c.length)(0)

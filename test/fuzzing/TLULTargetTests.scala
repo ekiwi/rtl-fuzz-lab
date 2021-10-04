@@ -1,6 +1,7 @@
 package fuzzing
 
 import chiseltest.WriteVcdAnnotation
+import firrtl.stage.FirrtlSourceAnnotation
 import fuzzing.targets.{FIRRTLHandler, Instruction, Read, Wait, Write}
 import org.scalatest.flatspec.AnyFlatSpec
 
@@ -10,18 +11,19 @@ class TLULTargetTests extends AnyFlatSpec {
   behavior of "TLULTarget"
 
   val target = "TLUL"
+  val FIRRTL = Seq(FirrtlSourceAnnotation("test/resources/fuzzing/TLI2C.fir"))
 
   it should "execute a single input" in {
-    val fuzzer = FIRRTLHandler.firrtlToTarget("test/resources/fuzzing/TLI2C.fir", target, "test_run_dir/TLUL_unit_test")
+    val fuzzer = FIRRTLHandler.firrtlToTarget(target, "test_run_dir/TLUL_unit_test", FIRRTL)
     //21 bytes required to provide a complete TLI2C input (without HWF Grammar)
     val input = Array(1, 3, 0, 0, 0, 2, 3, 0, 0, 0, 2, 0, 0, 0, 2).map(_.toByte)
-    val (coverage, _) = fuzzer.run(new ByteArrayInputStream(input))
+    val (coverage, _) = fuzzer.run(new ByteArrayInputStream(input), 1)
     println(coverage)
     fuzzer.finish()
   }
 
   it should "execute a single input, using grammar" in {
-    val fuzzer = FIRRTLHandler.firrtlToTarget("test/resources/fuzzing/TLI2C.fir", target, "test_run_dir/TLUL_unit_test")
+    val fuzzer = FIRRTLHandler.firrtlToTarget(target, "test_run_dir/TLUL_unit_test", FIRRTL)
     // the I2C peripheral base address is at 0x10016000
     val addr = 0x10016000L
 
@@ -46,14 +48,14 @@ class TLULTargetTests extends AnyFlatSpec {
     val c = Instruction(Read, addr).toByteArray
     val input = a ++ a ++ b ++ b ++ c ++ offsets.map(o => Instruction(Read, addr + o).toByteArray).reduce(_ ++ _)
 
-    val (coverage, _) = fuzzer.run(new ByteArrayInputStream(input))
+    val (coverage, _) = fuzzer.run(new ByteArrayInputStream(input), 1)
     println(coverage)
     fuzzer.finish()
   }
 
 
   it should "execute an inputted file" in {
-    val fuzzer = FIRRTLHandler.firrtlToTarget("test/resources/fuzzing/TLI2C.fir", "rfuzz", "test_run_dir/TLUL_input_file", Seq(WriteVcdAnnotation))
+    val fuzzer = FIRRTLHandler.firrtlToTarget("rfuzz", "test_run_dir/TLUL_input_file", Seq(WriteVcdAnnotation) ++ FIRRTL)
 
     //Read in generated input file as bytes
     //val inputPath = "seeds/auto_ecb_128bit_encrypt_2blocks.hwf"
@@ -61,7 +63,7 @@ class TLULTargetTests extends AnyFlatSpec {
     val inputFile = os.pwd / os.RelPath(inputPath)
     val input = os.read.inputStream(inputFile)
 
-    val (coverage, _) = fuzzer.run(input)
+    val (coverage, _) = fuzzer.run(input, 1)
     println(coverage)
     fuzzer.finish()
   }

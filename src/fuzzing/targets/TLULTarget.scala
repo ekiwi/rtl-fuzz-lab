@@ -88,9 +88,9 @@ class TLULTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget 
   private val inputBits = info.inputs.map(_._2).sum
   private val inputSize = scala.math.ceil(inputBits.toDouble / 8.0).toInt
 
-  private def getCoverage: Seq[Byte] = {
+  private def getCoverage(feedbackCap: Int): Seq[Byte] = {
     val c = dut.getCoverage()
-    c.map(_._2).map(v => scala.math.min(v, 255).toByte)
+    c.map(_._2).map(v => scala.math.min(v, feedbackCap).toByte)
   }
 
   //NEW CONSTANTS
@@ -235,7 +235,7 @@ class TLULTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget 
 
   //NEW METHODS
 
-  override def run(input: java.io.InputStream): (Seq[Byte], Boolean) = {
+  override def run(input: java.io.InputStream, feedbackCap: Int): (Seq[Byte], Boolean) = {
     val start = System.nanoTime()
     setInputsToZero()
     metaReset()
@@ -255,7 +255,7 @@ class TLULTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget 
     }
 
     val startCoverage = System.nanoTime()
-    var c = getCoverage
+    var c = getCoverage(feedbackCap)
 
     if (!isValid && !acceptInvalid) {
       c = Seq.fill[Byte](c.length)(0)
