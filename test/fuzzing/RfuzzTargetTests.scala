@@ -1,6 +1,6 @@
 package fuzzing
 
-import firrtl.stage.FirrtlSourceAnnotation
+import firrtl.stage.FirrtlFileAnnotation
 import fuzzing.targets.FIRRTLHandler
 import org.scalatest.flatspec.AnyFlatSpec
 
@@ -12,7 +12,7 @@ class RfuzzTargetTests extends AnyFlatSpec {
   val target = "rfuzz"
 
   it should "execute a single input" in {
-    val fuzzer = FIRRTLHandler.firrtlToTarget(target, "test_run_dir/rfuzz", Seq(FirrtlSourceAnnotation("test/resources/fuzzing/TLI2C.fir")))
+    val fuzzer = FIRRTLHandler.firrtlToTarget(target, "test_run_dir/rfuzz", Seq(FirrtlFileAnnotation("test/resources/fuzzing/TLI2C.fir")))
     val input = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).map(_.toByte)
     val (coverage, _) = fuzzer.run(new ByteArrayInputStream(input), 1)
     println(coverage)

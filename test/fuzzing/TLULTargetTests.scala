@@ -1,7 +1,7 @@
 package fuzzing
 
 import chiseltest.WriteVcdAnnotation
-import firrtl.stage.FirrtlSourceAnnotation
+import firrtl.stage.FirrtlFileAnnotation
 import fuzzing.targets.{FIRRTLHandler, Instruction, Read, Wait, Write}
 import org.scalatest.flatspec.AnyFlatSpec
 
@@ -11,7 +11,7 @@ class TLULTargetTests extends AnyFlatSpec {
   behavior of "TLULTarget"
 
   val target = "TLUL"
-  val FIRRTL = Seq(FirrtlSourceAnnotation("test/resources/fuzzing/TLI2C.fir"))
+  val FIRRTL = Seq(FirrtlFileAnnotation("test/resources/fuzzing/TLI2C.fir"))
 
   it should "execute a single input" in {
     val fuzzer = FIRRTLHandler.firrtlToTarget(target, "test_run_dir/TLUL_unit_test", FIRRTL)

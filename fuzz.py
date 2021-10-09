@@ -76,7 +76,7 @@ for i in range(args.iterations):
                         FEEDBACK=args.feedback,
                         VCD=str(args.vcd).lower(),
                         MTC=str(args.mtc).lower()))
-    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver --FIRRTL {FIRRTL} --Harness {HARNESS} --Directedness {DIRECTEDNESS} --Feedback {FEEDBACK} --VCD {VCD} --MuxToggleCoverage {MTC}".format(FIRRTL=args.firrtl,
+    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver --FIRRTL {FIRRTL} --Harness {HARNESS} --Directedness {DIRECTEDNESS} --Feedback {FEEDBACK} --VCD {VCD} --MuxToggleCoverage {MTC} &".format(FIRRTL=args.firrtl,
                         HARNESS=args.harness,
                         DIRECTEDNESS=str(args.directedness).lower(),
                         FEEDBACK=args.feedback,
@@ -85,7 +85,7 @@ for i in range(args.iterations):
 
     os.system("sleep 13s")
 
-    os.system('timeout {TIME_STRING}s "{AFL_PATH}"/afl-fuzz -d -i seeds -o temp_out -f input -- ./fuzzing/afl-proxy a2j j2a log'.format(\
+    os.system('timeout {TIME_STRING}s "{AFL_PATH}"/afl-fuzz -d -i seeds -o temp_out -f input -- ./fuzzing/afl-proxy a2j j2a log'.format(
                         AFL_PATH=args.afl_path,
                         TIME_STRING=str(shifted)))
 

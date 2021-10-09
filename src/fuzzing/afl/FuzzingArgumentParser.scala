@@ -3,7 +3,7 @@ package fuzzing.afl
 import firrtl.AnnotationSeq
 import firrtl.annotations.{CircuitTarget, NoTargetAnnotation}
 import firrtl.options.{DuplicateHandling, ExceptOnError, ShellOption}
-import firrtl.stage.FirrtlSourceAnnotation
+import firrtl.stage.FirrtlFileAnnotation
 import scopt.OptionParser
 import chiseltest.WriteVcdAnnotation
 import fuzzing.coverage.DoNotCoverAnnotation
@@ -19,7 +19,7 @@ class FuzzingArgumentParser extends OptionParser[AnnotationSeq]("fuzzer") with D
   private val argumentOptions = Seq(
     new ShellOption[String](
       longOption = "FIRRTL",
-      toAnnotationSeq = input => Seq(FirrtlSourceAnnotation(input)),
+      toAnnotationSeq = input => Seq(FirrtlFileAnnotation(input)),
       helpText = "",
       helpValueName = Some("<str>")
     ),
