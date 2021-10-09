@@ -7,10 +7,8 @@ import time
 # Fuzz using the following parameters
 
 parser = argparse.ArgumentParser(description="Run RTLFuzzLab")
-parser.add_argument('--firrtl', type=str, required=True,
-                    help="Path to FIRRTL")
-parser.add_argument('--harness', type=str, required=True,
-                    help="The harness under test")
+
+# Python Arguments
 parser.add_argument('-t', '--time', type=int, required=True,
                     help="The time, in minutes, to run the fuzzer")
 parser.add_argument('-f', '--folder', type=str,
@@ -19,6 +17,20 @@ parser.add_argument('-i', '--iterations', type=int, required=True,
                     help="The number of iterations to run")
 parser.add_argument('-a', '--afl-path', type=str, default='~/AFL',
                     help="The path to the AFL folder")
+
+# Scala Arguments
+parser.add_argument('--firrtl', type=str, required=True,
+                    help="Path to FIRRTL")
+parser.add_argument('--harness', type=str, required=True,
+                    help="The harness under test")
+parser.add_argument('-d', '--directedness', type=bool, default=False,
+                    help="Whether to fuzz the entire hardware")
+parser.add_argument('--vcd', type=bool, default=False,
+                    help="Generate VCD")
+parser.add_argument('--feedback', type=int, default=255,
+                    help="Number of toggles counted per input")
+parser.add_argument('--mtc', type=bool, default=False,
+                    help="False = MuxToggleCoverage, True = Full MTC")
 
 args = parser.parse_args()
 
@@ -58,13 +70,24 @@ for i in range(args.iterations):
                         HARNESS=args.harness))
 
     # Option 1 (preferred due to slightly better memory usage and possible slightly better execution speed)
-    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver {FIRRTL} input a2j j2a {HARNESS} & sleep 13s".format(
+    print("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver --FIRRTL {FIRRTL} --Harness {HARNESS} --Directedness {DIRECTEDNESS} --Feedback {FEEDBACK} --VCD {VCD} --MuxToggleCoverage {MTC}".format(FIRRTL=args.firrtl,
                         HARNESS=args.harness,
-                        FIRRTL=args.firrtl))
+                        DIRECTEDNESS=str(args.directedness).lower(),
+                        FEEDBACK=args.feedback,
+                        VCD=str(args.vcd).lower(),
+                        MTC=str(args.mtc).lower()))
+    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver --FIRRTL {FIRRTL} --Harness {HARNESS} --Directedness {DIRECTEDNESS} --Feedback {FEEDBACK} --VCD {VCD} --MuxToggleCoverage {MTC}".format(FIRRTL=args.firrtl,
+                        HARNESS=args.harness,
+                        DIRECTEDNESS=str(args.directedness).lower(),
+                        FEEDBACK=args.feedback,
+                        VCD=str(args.vcd).lower(),
+                        MTC=str(args.mtc).lower()))
+
+    os.system("sleep 13s")
 
     os.system('timeout {TIME_STRING}s "{AFL_PATH}"/afl-fuzz -d -i seeds -o temp_out -f input -- ./fuzzing/afl-proxy a2j j2a log'.format(\
-                        AFL_PATH=args.afl_path),
-                        TIME_STRING=shifted)
+                        AFL_PATH=args.afl_path,
+                        TIME_STRING=str(shifted)))
 
     while not os.path.exists("temp_out/end_time"):
         time.sleep(1)

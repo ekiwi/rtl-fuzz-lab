@@ -9,7 +9,6 @@ import chiseltest.WriteVcdAnnotation
 import fuzzing.coverage.DoNotCoverAnnotation
 
 case class Harness(name: String) extends NoTargetAnnotation
-case object Directed extends NoTargetAnnotation
 case class FeedbackCap(cap: Int) extends NoTargetAnnotation
 case class MuxToggleOpAnnotation(fullToggle: Boolean) extends NoTargetAnnotation
 
@@ -30,16 +29,17 @@ class FuzzingArgumentParser extends OptionParser[AnnotationSeq]("fuzzer") with D
       helpText = "",
       helpValueName = Some("<str>")
     ),
-    new ShellOption[Unit](
+    new ShellOption[Boolean](
       longOption = "Directedness",
-      toAnnotationSeq = _ => Seq(DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
-                                 DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75"))
-                                 ),
+      toAnnotationSeq = input => if (input) {
+                                      Seq(DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
+                                      DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75")))
+                                  } else {Seq()},
       helpText = ""
     ),
-    new ShellOption[Unit](
+    new ShellOption[Boolean](
       longOption = "VCD",
-      toAnnotationSeq = _ => Seq(WriteVcdAnnotation),
+      toAnnotationSeq = input => if (input) {Seq(WriteVcdAnnotation)} else {Seq()},
       helpText = "",
     ),
     new ShellOption[Int](
