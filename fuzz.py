@@ -17,7 +17,7 @@ parser.add_argument('-i', '--iterations', type=int, required=True,
                     help="The number of iterations to run")
 parser.add_argument('-a', '--afl-path', type=str, default='~/AFL',
                     help="The path to the AFL folder")
-parser.add_argument('--seed', type=str, default=False,
+parser.add_argument('--seed', type=str, default="",
                     help="Name of the seed in src/fuzzing/template_seeds/ to fuzz on")
 
 # Scala Arguments
@@ -105,7 +105,7 @@ for i in range(args.iterations):
 
     os.system("sleep 13s")
 
-    os.system('timeout {TIME_STRING}s "{AFL_PATH}"/afl-fuzz -d -i seeds -o temp_out -f input -- ./fuzzing/afl-proxy a2j j2a log'.format(
+    os.system('timeout {TIME_STRING}s {AFL_PATH}/afl-fuzz -d -i seeds -o temp_out -f input -- ./fuzzing/afl-proxy a2j j2a log'.format(
                         AFL_PATH=args.afl_path,
                         TIME_STRING=str(shifted)))
 
@@ -115,7 +115,7 @@ for i in range(args.iterations):
     shutil.move('temp_out', out_folder_run)
 
     os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.coverage.CoverageAnalysis {FIRRTL} {OUT_FOLDER_RUN} {HARNESS}".format(
-                        FIRRTL = args.firrtl,
+                        FIRRTL=args.firrtl,
                         HARNESS=args.harness,
                         OUT_FOLDER_RUN=args.folder))
 

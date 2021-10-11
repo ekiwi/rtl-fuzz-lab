@@ -4,10 +4,14 @@ import fuzzing.afl.MuxToggleOpAnnotation
 import fuzzing.targets.{FIRRTLHandler, FuzzTarget}
 import chiseltest.WriteVcdAnnotation
 import firrtl.annotations.{Annotation, CircuitTarget}
+import firrtl.stage.FirrtlFileAnnotation
 
 object CoverageAnalysis extends App {
   var targetAnnos = Seq[Annotation]()
-  targetAnnos = Seq[Annotation](
+
+  targetAnnos = targetAnnos ++ Seq(FirrtlFileAnnotation(args(0)))
+
+  targetAnnos = targetAnnos ++ Seq[Annotation](
     DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
     DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75"))
   )
