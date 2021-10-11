@@ -33,7 +33,14 @@ class FuzzingArgumentParser extends OptionParser[AnnotationSeq]("fuzzer") with D
       longOption = "Directedness",
       toAnnotationSeq = input => if (input) {
                                       Seq(DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
-                                      DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75")))
+                                      DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75")),
+                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("TLMonitor_66")),
+                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIFIFO_1")),
+                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIMedia_1")),
+                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("DummyPlusArgReader_69")),
+                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("Queue_18")),
+                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("Queue_19")),
+                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIPhysical_1")))
                                   } else {Seq()},
       helpText = ""
     ),
