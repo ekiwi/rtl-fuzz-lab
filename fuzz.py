@@ -36,6 +36,11 @@ parser.add_argument('--mtc', type=bool, default=False,
 
 args = parser.parse_args()
 
+supported_harnesses = ['rfuzz', 'tlul']
+if args.harness not in supported_harnesses:
+    print("ERROR: Unrecognized harness")
+    sys.exit(-1)
+
 seconds = args.time * 60
 shifted = seconds + 5
 
