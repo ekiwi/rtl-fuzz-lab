@@ -17,6 +17,8 @@ parser.add_argument('-i', '--iterations', type=int, required=True,
                     help="The number of iterations to run")
 parser.add_argument('-a', '--afl-path', type=str, default='~/AFL',
                     help="The path to the AFL folder")
+parser.add_argument('--seed', type=str, default=False,
+                    help="Name of the seed in src/fuzzing/template_seeds/ to fuzz on")
 
 # Scala Arguments
 parser.add_argument('--firrtl', type=str, required=True,
@@ -46,6 +48,24 @@ os.environ['AFL_SKIP_CPUFREQ'] = '1'
 if not os.path.isdir(args.folder):
     os.mkdir(args.folder)
     print("Generated output folder to store results")
+
+# Moves seed to correct folder
+if args.seed:
+    print("Clearing seeds folder...")
+    for filename in os.listdir('seeds'):
+        file_path = os.path.join('seeds', filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
+            exit()
+
+    print("Copying seed to seeds folder:", args.seed)
+    f = os.path.join('src/fuzzing/template_seeds', args.seed)
+    shutil.copy(f, 'seeds')
 
 # Performs ITERATIONS fuzzing runs for given parameters
 for i in range(args.iterations):
