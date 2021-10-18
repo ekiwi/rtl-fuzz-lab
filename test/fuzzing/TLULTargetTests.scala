@@ -1,7 +1,10 @@
 package fuzzing
 
 import chiseltest.WriteVcdAnnotation
+import firrtl.annotations.CircuitTarget
 import firrtl.stage.FirrtlFileAnnotation
+import fuzzing.afl.MuxToggleOpAnnotation
+import fuzzing.coverage.DoNotCoverAnnotation
 import fuzzing.targets.{FIRRTLHandler, Instruction, Read, Wait, Write}
 import org.scalatest.flatspec.AnyFlatSpec
 
@@ -11,7 +14,13 @@ class TLULTargetTests extends AnyFlatSpec {
   behavior of "TLULTarget"
 
   val target = "TLUL"
+  val VCD = Seq(WriteVcdAnnotation)
   val FIRRTL = Seq(FirrtlFileAnnotation("test/resources/fuzzing/TLI2C.fir"))
+  val MTC = Seq(MuxToggleOpAnnotation(false))
+  val Direct = Seq(
+    DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
+    DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75"))
+  )
 
   it should "execute a single input" in {
     val fuzzer = FIRRTLHandler.firrtlToTarget(target, "test_run_dir/TLUL_unit_test", FIRRTL)
@@ -54,16 +63,30 @@ class TLULTargetTests extends AnyFlatSpec {
   }
 
 
-  it should "execute an inputted file" in {
-    val fuzzer = FIRRTLHandler.firrtlToTarget("rfuzz", "test_run_dir/TLUL_input_file", Seq(WriteVcdAnnotation) ++ FIRRTL)
+  it should "execute an inputted file, tlul" in {
+    val fuzzer = FIRRTLHandler.firrtlToTarget("tlul", "test_run_dir/TLUL_input_file", VCD ++ FIRRTL ++ MTC ++ Direct)
 
     //Read in generated input file as bytes
     //val inputPath = "seeds/auto_ecb_128bit_encrypt_2blocks.hwf"
-    val inputPath = "src/fuzzing/template_seeds/binary/rfuzz_test.hwf"
+    val inputPath = "src/fuzzing/template_seeds/binary/TLI2C_longSeed.hwf"
     val inputFile = os.pwd / os.RelPath(inputPath)
     val input = os.read.inputStream(inputFile)
 
-    val (coverage, _) = fuzzer.run(input, 1)
+    val (coverage, _) = fuzzer.run(input, 255)
+    println(coverage)
+    fuzzer.finish()
+  }
+
+  it should "execute an inputted file, rufzz" in {
+    val fuzzer = FIRRTLHandler.firrtlToTarget("rfuzz", "test_run_dir/TLUL_input_file", VCD ++ FIRRTL ++ MTC ++ Direct)
+
+    //Read in generated input file as bytes
+    //val inputPath = "seeds/auto_ecb_128bit_encrypt_2blocks.hwf"
+    val inputPath = "src/fuzzing/template_seeds/binary/RFUZZ_longSeed.hwf"
+    val inputFile = os.pwd / os.RelPath(inputPath)
+    val input = os.read.inputStream(inputFile)
+
+    val (coverage, _) = fuzzer.run(input, 255)
     println(coverage)
     fuzzer.finish()
   }

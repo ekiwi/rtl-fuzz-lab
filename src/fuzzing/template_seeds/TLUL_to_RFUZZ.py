@@ -33,7 +33,7 @@ def main(input_file):
 
     finalBinary = int(''.join(allCycleBinary), 2)
 
-    output_file = "binary/rfuzz_test.hwf"
+    output_file = "binary/RFUZZ_longSeed.hwf"
     with open(output_file, "wb") as file:
         print(finalBinary.to_bytes(21*len(cycles), byteorder='big'))
         file.write(finalBinary.to_bytes(21*len(cycles), byteorder='big'))
