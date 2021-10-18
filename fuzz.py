@@ -4,6 +4,11 @@ import sys
 import shutil
 import time
 
+if ' -- ' not in " ".join(sys.argv):
+    print("Please provide Scala arguments")
+    sys.exit(-1)
+
+python_args, scala_args = " ".join(sys.argv).split(' -- ')
 # Fuzz using the following parameters
 
 parser = argparse.ArgumentParser(description="Run RTLFuzzLab")
@@ -20,26 +25,7 @@ parser.add_argument('-a', '--afl-path', type=str, default='~/AFL',
 parser.add_argument('--seed', type=str, default="",
                     help="Name of the seed in src/fuzzing/template_seeds/ to fuzz on")
 
-# Scala Arguments
-parser.add_argument('--firrtl', type=str, required=True,
-                    help="Path to FIRRTL")
-parser.add_argument('--harness', type=str, required=True,
-                    help="The harness under test")
-parser.add_argument('-d', '--directedness', type=bool, default=False,
-                    help="Whether to fuzz the entire hardware")
-parser.add_argument('--vcd', type=bool, default=False,
-                    help="Generate VCD")
-parser.add_argument('--feedback', type=int, default=255,
-                    help="Number of toggles counted per input")
-parser.add_argument('--mtc', type=bool, default=False,
-                    help="False = MuxToggleCoverage, True = Full MTC")
-
-args = parser.parse_args()
-
-supported_harnesses = ['rfuzz', 'tlul']
-if args.harness not in supported_harnesses:
-    print("ERROR: Unrecognized harness")
-    sys.exit(-1)
+args = parser.parse_args(python_args.split()[1:])
 
 seconds = args.time * 60
 shifted = seconds + 5
@@ -77,10 +63,8 @@ for i in range(args.iterations):
     print()
     out_folder_run = os.path.join(args.folder, str(i) + ".out")
     print("Starting fuzzing run:", i)
-    print("Fuzzing on: \n FIRRTL:     {FIRRTL} \n HARNESS:     {HARNESS} \n MINUTES:    {MINUTES} \n OUT_FOLDER:     {OUT_FOLDER_RUN}".format(
+    print("Fuzzing on: \n MINUTES:    {MINUTES} \n OUT_FOLDER:     {OUT_FOLDER_RUN}".format(
                         MINUTES=args.time,
-                        FIRRTL=args.firrtl,
-                        HARNESS=args.harness,
                         OUT_FOLDER_RUN=args.folder))
 
     # Prevent overwriting OUT_FOLDER_RUN
@@ -90,23 +74,10 @@ for i in range(args.iterations):
         sys.exit(1)
 
     # Calls AFLDriver to setup fuzzing
-    print("Calling AFLDriver on: {FIRRTL} input a2j j2a {HARNESS}".format(
-                        FIRRTL=args.firrtl,
-                        HARNESS=args.harness))
+    print("Calling AFLDriver on: {SCALA_ARGS} input a2j j2a ".format(SCALA_ARGS=scala_args))
 
-    # Option 1 (preferred due to slightly better memory usage and possible slightly better execution speed)
-    print("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver --FIRRTL {FIRRTL} --Harness {HARNESS} --Directedness {DIRECTEDNESS} --Feedback {FEEDBACK} --VCD {VCD} --MuxToggleCoverage {MTC}".format(FIRRTL=args.firrtl,
-                        HARNESS=args.harness,
-                        DIRECTEDNESS=str(args.directedness).lower(),
-                        FEEDBACK=args.feedback,
-                        VCD=str(args.vcd).lower(),
-                        MTC=str(args.mtc).lower()))
-    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver --FIRRTL {FIRRTL} --Harness {HARNESS} --Directedness {DIRECTEDNESS} --Feedback {FEEDBACK} --VCD {VCD} --MuxToggleCoverage {MTC} &".format(FIRRTL=args.firrtl,
-                        HARNESS=args.harness,
-                        DIRECTEDNESS=str(args.directedness).lower(),
-                        FEEDBACK=args.feedback,
-                        VCD=str(args.vcd).lower(),
-                        MTC=str(args.mtc).lower()))
+    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver {SCALA_ARGS}".format(
+                        SCALA_ARGS=scala_args))
 
     os.system("sleep 13s")
 
@@ -118,10 +89,5 @@ for i in range(args.iterations):
         time.sleep(1)
 
     shutil.move('temp_out', out_folder_run)
-
-    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.coverage.CoverageAnalysis {FIRRTL} {OUT_FOLDER_RUN} {HARNESS}".format(
-                        FIRRTL=args.firrtl,
-                        HARNESS=args.harness,
-                        OUT_FOLDER_RUN=args.folder))
 
 sys.exit(0)
