@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import argparse
 import os
 import sys
@@ -55,7 +57,7 @@ if args.seed:
             exit()
 
     print("Copying seed to seeds folder:", args.seed)
-    f = os.path.join('src/fuzzing/template_seeds', args.seed)
+    f = os.path.join('src/fuzzing/template_seeds/binary', args.seed)
     shutil.copy(f, 'seeds')
 
 # Performs ITERATIONS fuzzing runs for given parameters
@@ -76,11 +78,12 @@ for i in range(args.iterations):
     # Calls AFLDriver to setup fuzzing
     print("Calling AFLDriver on: {SCALA_ARGS} input a2j j2a ".format(SCALA_ARGS=scala_args))
 
-    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver {SCALA_ARGS}".format(
+    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver {SCALA_ARGS} &".format(
                         SCALA_ARGS=scala_args))
 
     os.system("sleep 13s")
 
+    print(shifted)
     os.system('timeout {TIME_STRING}s {AFL_PATH}/afl-fuzz -d -i seeds -o temp_out -f input -- ./fuzzing/afl-proxy a2j j2a log'.format(
                         AFL_PATH=args.afl_path,
                         TIME_STRING=str(shifted)))

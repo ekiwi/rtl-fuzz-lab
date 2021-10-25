@@ -49,7 +49,7 @@ Takes in arguments: `FIRRTL Harness Minutes Out_folder Iterations AFL_path`
 
 Example:
 ```.sh
-./fuzz.sh test/resources/fuzzing/TLI2C.fir tlul 1 results/example 3 ~/AFL
+./fuzz.py -t 2 -f ./results/example3 -i 10 -a ~/AFL --seed binary/0seed -- --FIRRTL test/resources/fuzzing/TLI2C.fir --Harness tlul --Directedness false --MuxToggleCoverage false --VCD false --Feedback 255
 ```
 This will set certain environment variables for AFL. Modify the script to manually control AFL.
 

@@ -45,6 +45,15 @@ case class Instruction(opcode: Opcode, address: BigInt = 0, data: BigInt = 0) {
 }
 
 class TLULTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget {
+
+  private var TLprefix = "Error";
+  for ((input, _) <- info.inputs) {
+    println(input)
+    if (input.endsWith("b_ready")) {
+      TLprefix = input.take(input.length - 7)
+    }
+  }
+
   val MetaReset = "metaReset"
   require(info.clocks.size == 1, s"Only designs with a single clock are supported!\n${info.clocks}")
   require(info.inputs.exists(_._1 == MetaReset), s"No meta reset in ${info.inputs}")
@@ -109,7 +118,7 @@ class TLULTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget 
     SendTLULRequest(TLULOpcodeAChannel.Get.toString.toInt, address, 0, OT_TL_SZW, FULL_MASK)
     WaitForDeviceResponse()
 
-    val d_data = dut.peek("auto_in_d_bits_data")
+    val d_data = dut.peek(TLprefix + "d_bits_data")
     ClearRequest()
     d_data
   }
@@ -121,23 +130,23 @@ class TLULTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget 
   }
 
   private def SendTLULRequest(opcode: BigInt, address: BigInt, data: BigInt, size: BigInt, mask: BigInt): Unit = {
-    dut.poke("auto_in_a_valid", 1)
-    dut.poke("auto_in_a_bits_opcode", opcode)
-    dut.poke("auto_in_a_bits_size", size)
-    dut.poke("auto_in_a_bits_address", address)
-    dut.poke("auto_in_a_bits_data", data)
-    dut.poke("auto_in_a_bits_mask", mask)
-    dut.poke("auto_in_d_ready", 1)
+    dut.poke(TLprefix + "a_valid", 1)
+    dut.poke(TLprefix + "a_bits_opcode", opcode)
+    dut.poke(TLprefix + "a_bits_size", size)
+    dut.poke(TLprefix + "a_bits_address", address)
+    dut.poke(TLprefix + "a_bits_data", data)
+    dut.poke(TLprefix + "a_bits_mask", mask)
+    dut.poke(TLprefix + "d_ready", 1)
 
     WaitForDeviceReady()
   }
 
   private def WaitForDeviceReady(): Unit = {
     step()
-    WaitForDevice("auto_in_a_ready")
+    WaitForDevice(TLprefix + "a_ready")
   }
   private def WaitForDeviceResponse(): Unit = {
-    WaitForDevice("auto_in_d_valid")
+    WaitForDevice(TLprefix + "d_valid")
   }
   private def WaitForDevice(port: String): Unit = {
     var timeout = DEV_RESPONSE_TIMEOUT
@@ -155,7 +164,7 @@ class TLULTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget 
     //fuzzInputs.foreach { case (name, size) => println("'" + name + "'", size.toString, dut.peek(name).toString) }
     //println("---")
     fuzzInputs.foreach { case (name, _) => dut.poke(name, 0) }
-    dut.poke("auto_in_d_ready", 1)
+    dut.poke(TLprefix + "d_ready", 1)
   }
 
   private def applyInstruction(instruction: Instruction): Unit = {
@@ -245,7 +254,7 @@ class TLULTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget 
     dut.resetCoverage()
 
     //TODO: Set d_ready to be 1, as is done in TLULHostTb initialization?
-    dut.poke("auto_in_d_ready", 1)
+    dut.poke(TLprefix + "d_ready", 1)
 
     var instruction_readValid: (Instruction, Boolean) = getInstruction(input)
     //Loop if last readValid = true
