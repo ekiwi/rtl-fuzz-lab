@@ -48,7 +48,6 @@ class TLULTarget(dut: SimulatorContext, info: TopmoduleInfo) extends FuzzTarget 
 
   private var TLprefix = "Error";
   for ((input, _) <- info.inputs) {
-    println(input)
     if (input.endsWith("b_ready")) {
       TLprefix = input.take(input.length - 7)
     }

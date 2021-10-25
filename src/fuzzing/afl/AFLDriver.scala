@@ -43,23 +43,23 @@ object AFLDriver extends App {
   //Parse args
   val targetKind = argAnnos.collectFirst {case Harness(i) => i}.getOrElse("")
   val feedbackCap = argAnnos.collectFirst {case FeedbackCap(i) => i}.getOrElse(0)
+  val outputFolder = argAnnos.collectFirst {case Folder(i) => i}.getOrElse("")
 
   val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(targetKind, "test_run_dir/" + targetKind + "_with_afl", argAnnos)
 
-  println("Ready to fuzz! Waiting for someone to open the fifos!")
+  println("\nReady to fuzz! Waiting for someone to open the fifos!")
   val (a2jPipe, j2aPipe, inputFile) = (os.pwd / "a2j", os.pwd / "j2a", os.pwd / "input")
-  AFLProxy.fuzz(target, feedbackCap, a2jPipe, j2aPipe, inputFile)
+  AFLProxy.fuzz(target, feedbackCap, outputFolder, a2jPipe, j2aPipe, inputFile)
 }
 
 /** Communicates with the AFLProxy written by Rohan Padhye and Caroline Lemieux for the JQF project */
 object AFLProxy {
   val CoverageMapSize = 1 << 16
-  def fuzz(target: FuzzTarget, feedbackCap: Int, a2jPipe: os.Path, j2aPipe: os.Path, inputFile: os.Path): Unit = {
+  def fuzz(target: FuzzTarget, feedbackCap: Int, outputFolder: String, a2jPipe: os.Path, j2aPipe: os.Path, inputFile: os.Path): Unit = {
     // connect to the afl proxy
     val proxyInput = os.read.inputStream(a2jPipe)
     val proxyOutput = os.write.outputStream(j2aPipe)
 
-    // fuzz
     try {
 //      var overallCoverage = Set[Int]()                                                      //Hack to measure cumulative coverage realtime
 //      var cumulativeCoverage = 0.0                                                          //Hack to measure cumulative coverage realtime
@@ -84,7 +84,7 @@ object AFLProxy {
       case _: java.io.IOException =>
     }
 
-    val end_time_outputFile = "temp_out/end_time"
+    val end_time_outputFile = outputFolder + "/end_time"
     val pw = new PrintWriter(new File(end_time_outputFile))
     pw.write(s"""${System.currentTimeMillis()}""")
     pw.close()

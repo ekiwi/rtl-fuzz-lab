@@ -4,7 +4,6 @@ import argparse
 import os
 import sys
 import shutil
-import time
 
 if ' -- ' not in " ".join(sys.argv):
     print("Please provide Scala arguments")
@@ -12,9 +11,6 @@ if ' -- ' not in " ".join(sys.argv):
 
 python_args, scala_args = " ".join(sys.argv).split(' -- ')
 
-if "Folder" not in scala_args:
-    scala_args.append(" --Folder \"\"")
-# Fuzz using the following parameters
 
 parser = argparse.ArgumentParser(description="Run RTLFuzzLab")
 
@@ -32,10 +28,8 @@ parser.add_argument('--seed', type=str, default="",
 
 args = parser.parse_args(python_args.split()[1:])
 
-seconds = args.time * 60
-shifted = seconds + 5
 
-print("Creating jar file...")
+print("\nCreating jar file...\n")
 os.system("sbt assembly")
 
 os.environ['AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES'] = '1'
@@ -47,7 +41,7 @@ if not os.path.isdir(args.folder):
 
 # Moves seed to correct folder
 if args.seed:
-    print("Clearing seeds folder...")
+    print("\nClearing seeds folder...")
     for filename in os.listdir('seeds'):
         file_path = os.path.join('seeds', filename)
         try:
@@ -59,41 +53,33 @@ if args.seed:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
             exit()
 
-    print("Copying seed to seeds folder:", args.seed)
+    print("Copying file to seeds folder:", args.seed)
     f = os.path.join('src/fuzzing/template_seeds/binary', args.seed)
     shutil.copy(f, 'seeds')
 
-# Performs ITERATIONS fuzzing runs for given parameters
+# Performs ITERATIONS fuzzing runs on provided parameters
 for i in range(args.iterations):
-    print()
     out_folder_run = os.path.join(args.folder, str(i) + ".out")
-    print("Starting fuzzing run:", i)
-    print("Fuzzing on: \n MINUTES:    {MINUTES} \n OUT_FOLDER:     {OUT_FOLDER_RUN}".format(
-                        MINUTES=args.time,
-                        OUT_FOLDER_RUN=args.folder))
+    print("\nStarting fuzzing run:", i)
+    print("Fuzzing on: \n MINUTES: {MINUTES} \n OUT_FOLDER: {OUT_FOLDER_RUN}".format(
+        MINUTES=args.time, OUT_FOLDER_RUN=out_folder_run))
 
     # Prevent overwriting OUT_FOLDER_RUN
     if os.path.exists(out_folder_run):
         print("WARNING! DESIRED OUTPUT WOULD BE OVERWRITTEN: {OUT_FOLDER_RUN}".format(
-                        OUT_FOLDER_RUN=args.folder))
+            OUT_FOLDER_RUN=out_folder_run))
         sys.exit(1)
 
     # Calls AFLDriver to setup fuzzing
-    print("Calling AFLDriver on: {SCALA_ARGS} input a2j j2a ".format(SCALA_ARGS=scala_args))
+    print("Calling AFLDriver with arguments: {SCALA_ARGS}\n".format(
+        SCALA_ARGS=scala_args))
 
-    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver {SCALA_ARGS} &".format(
-                        SCALA_ARGS=scala_args))
+    os.system("java -cp target/scala-2.12/rtl-fuzz-lab-assembly-0.1.jar fuzzing.afl.AFLDriver {SCALA_ARGS} --Folder {FOLDER} &".format(
+        SCALA_ARGS=scala_args, FOLDER=out_folder_run))
 
     os.system("sleep 13s")
 
-    print(shifted)
-    os.system('timeout {TIME_STRING}s {AFL_PATH}/afl-fuzz -d -i seeds -o temp_out -f input -- ./fuzzing/afl-proxy a2j j2a log'.format(
-                        AFL_PATH=args.afl_path,
-                        TIME_STRING=str(shifted)))
-
-    while not os.path.exists("temp_out/end_time"):
-        time.sleep(1)
-
-    shutil.move('temp_out', out_folder_run)
+    os.system('timeout {TIME_STRING}s {AFL_PATH}/afl-fuzz -d -i seeds -o {OUT_FOLDER_RUN} -f input -- ./fuzzing/afl-proxy a2j j2a log'.format(
+        TIME_STRING=str(args.time * 60 + 5), AFL_PATH=args.afl_path, OUT_FOLDER_RUN=out_folder_run))
 
 sys.exit(0)

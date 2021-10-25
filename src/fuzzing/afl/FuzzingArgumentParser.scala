@@ -38,9 +38,10 @@ class FuzzingArgumentParser extends OptionParser[AnnotationSeq]("fuzzer") with D
                                   DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIFIFO_1")),
                                   DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIMedia_1")),
                                   DoNotCoverAnnotation(CircuitTarget("TLSPI").module("DummyPlusArgReader_69")),
-                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("Queue_18")),
-                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("Queue_19")),
-                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIPhysical_1"))),
+//                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("Queue_18")),
+//                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("Queue_19")),
+                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIPhysical_1"))
+      ),
       helpText = ""
     ),
     new ShellOption[Unit](

@@ -24,8 +24,9 @@ object CoverageAnalysis extends App {
 
   //Read in inputs files from queue and generate list of input-coverage pairs (ignores invalid coverage)
   val queue_files = os.list(queue).filter(os.isFile)
-  var invalid_files: Int = 0
+  val start_time = getCreationTime(queue_files.head.toString)
 
+  var invalid_files: Int = 0
   val files_coverageCounts = queue_files.flatMap { inputFile =>
     val in = os.read.inputStream(inputFile)
     val (coverage, valid) = target.run(in, feedbackCap)
@@ -53,21 +54,15 @@ object CoverageAnalysis extends App {
 
   println("Done!")
 
-  //Append end time to JSON file
-  def appendEndTime(out: StringBuilder): Unit = {
-    val source = scala.io.Source.fromFile(end_time_file.toString())
-    val data = try source.mkString.toLong finally source.close()
-
-    assert(start_time != 0L, "Start time is not initialized")
-    out.append(s""""end_time": ${(data - start_time) / 1000.0}""")
+  //Get the creation time of a produced AFL input given its filename
+  def getCreationTime(filename: String): Long = {
+    filename.split(',').last.toLong
   }
-
-  private var start_time = 0L
 
   //Append coverage data to JSON file
   def appendCoverageData(out: StringBuilder): Unit = {
     var overallCoverage = Set[Int]()
-    var previous_time = 0L
+    var previous_time = start_time
 
     out.append(s""""coverage_data": \n[""")
 
@@ -82,10 +77,7 @@ object CoverageAnalysis extends App {
       out.append(s""""filename": "${input_name}", """)
 
       //Add relative creation time (seconds) to JSON file
-      val creation_time = file.toString().split(',').last.toLong
-      if (input_name.split(',')(0) == "id:000000") {
-        start_time = creation_time
-      }
+      val creation_time = getCreationTime(file.toString())
       assert(creation_time >= previous_time, "Input creation times are not monotonically increasing")
       previous_time = creation_time
 
@@ -111,6 +103,13 @@ object CoverageAnalysis extends App {
       }
     }
     out.append("\n]")
+  }
+
+  //Append end time to JSON file
+  def appendEndTime(out: StringBuilder): Unit = {
+    val source = scala.io.Source.fromFile(end_time_file.toString())
+    val end_time = try source.mkString.toLong finally source.close()
+    out.append(s""""end_time": ${(end_time - start_time) / 1000.0}""")
   }
 
   //Handles MuxToggleCoverage. Converts COUNTS (number of times each signal toggled) to
