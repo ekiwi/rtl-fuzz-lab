@@ -4,6 +4,12 @@ RTLFuzzLab is designed to allow for easy experimentation with Coverage Directed 
 
 ![Software framework visualization](overview.svg)
 
+For details about RTLFuzzLab, please see our abstract released in WOSET 2021.
+
+[Abstract](https://woset-workshop.github.io/WOSET2021.html#article-10)
+
+Fajardo, Brandon and Laeufer, Kevin and Bachrach, Jonathan and Sen, Koushik. **RTLFUZZLAB: Building A Modular Open-Source Hardware Fuzzing Framework.** *In Workshop on Open-Source EDA Technology (WOSET)*, November, 2021.
+
 ## Installation
 
 ### Dependencies
@@ -88,7 +94,7 @@ python3 plotCoverage.py true results/example
 > Produces png of plot at coveragePlot.png
 
 
-## Acknoledgement
+## Acknowledgment
 Integrating AFL with our Scala based fuzz bench would not have been possible without the awesome AFL proxy infrastructure from the [JQF](https://github.com/rohanpadhye/JQF) project.
 
 ## License
