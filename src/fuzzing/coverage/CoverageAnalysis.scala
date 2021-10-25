@@ -1,32 +1,20 @@
 package fuzzing.coverage
 
-import fuzzing.afl.MuxToggleOpAnnotation
+import fuzzing.afl.{FeedbackCap, Folder, FuzzingArgumentParser, Harness}
 import fuzzing.targets.{FIRRTLHandler, FuzzTarget}
-import chiseltest.WriteVcdAnnotation
-import firrtl.annotations.{Annotation, CircuitTarget}
-import firrtl.stage.FirrtlFileAnnotation
 
 object CoverageAnalysis extends App {
-  var targetAnnos = Seq[Annotation]()
 
-  targetAnnos = targetAnnos ++ Seq(FirrtlFileAnnotation(args(0)))
+  val parser = new FuzzingArgumentParser
+  val argAnnos = parser.parse(args, Seq()).get
 
-  targetAnnos = targetAnnos ++ Seq[Annotation](
-    DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
-    DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75"))
-  )
-  targetAnnos = targetAnnos ++ Seq(MuxToggleOpAnnotation(false))
+  val targetKind = argAnnos.collectFirst {case Harness(i) => i}.getOrElse("")
+  val feedbackCap = argAnnos.collectFirst {case FeedbackCap(i) => i}.getOrElse(0)
+  val folder = argAnnos.collectFirst {case Folder(i) => i}.getOrElse("")
 
-  val writeVCD = false
-  if (writeVCD) {
-    targetAnnos = targetAnnos ++ Seq(WriteVcdAnnotation)
-  }
+  val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(targetKind, "test_run_dir/" + targetKind + "_with_afl", argAnnos)
 
-  val targetKind = args(2)
-  val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(targetKind, "test_run_dir/" + targetKind + "_with_afl", targetAnnos)
-
-
-  val outFolder = os.pwd / os.RelPath(args(1))
+  val outFolder = os.pwd / os.RelPath(folder)
   val queue = outFolder / os.RelPath("queue")
   val end_time_file = outFolder / os.RelPath("end_time")
   val outputJSON = outFolder / os.RelPath("coverage.json")
@@ -40,7 +28,7 @@ object CoverageAnalysis extends App {
 
   val files_coverageCounts = queue_files.flatMap { inputFile =>
     val in = os.read.inputStream(inputFile)
-    val (coverage, valid) = target.run(in, 1)
+    val (coverage, valid) = target.run(in, feedbackCap)
     in.close()
 
     if (valid) {

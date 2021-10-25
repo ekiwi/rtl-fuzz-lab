@@ -10,6 +10,7 @@ import fuzzing.coverage.DoNotCoverAnnotation
 
 case class Harness(name: String) extends NoTargetAnnotation
 case class FeedbackCap(cap: Int) extends NoTargetAnnotation
+case class Folder(str: String) extends NoTargetAnnotation
 case class MuxToggleOpAnnotation(fullToggle: Boolean) extends NoTargetAnnotation
 
 
@@ -29,24 +30,22 @@ class FuzzingArgumentParser extends OptionParser[AnnotationSeq]("fuzzer") with D
       helpText = "",
       helpValueName = Some("<str>")
     ),
-    new ShellOption[Boolean](
-      longOption = "Directedness",
-      toAnnotationSeq = input => if (input) {
-                                      Seq(DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
-                                      DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75")),
-                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("TLMonitor_66")),
-                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIFIFO_1")),
-                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIMedia_1")),
-                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("DummyPlusArgReader_69")),
-                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("Queue_18")),
-                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("Queue_19")),
-                                      DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIPhysical_1")))
-                                  } else {Seq()},
+    new ShellOption[Unit](
+      longOption = "Directed",
+      toAnnotationSeq = _ => Seq(DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
+                                  DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75")),
+                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("TLMonitor_66")),
+                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIFIFO_1")),
+                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIMedia_1")),
+                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("DummyPlusArgReader_69")),
+                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("Queue_18")),
+                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("Queue_19")),
+                                  DoNotCoverAnnotation(CircuitTarget("TLSPI").module("SPIPhysical_1"))),
       helpText = ""
     ),
-    new ShellOption[Boolean](
+    new ShellOption[Unit](
       longOption = "VCD",
-      toAnnotationSeq = input => if (input) {Seq(WriteVcdAnnotation)} else {Seq()},
+      toAnnotationSeq = _ => Seq(WriteVcdAnnotation),
       helpText = "",
     ),
     new ShellOption[Int](
@@ -60,6 +59,12 @@ class FuzzingArgumentParser extends OptionParser[AnnotationSeq]("fuzzer") with D
       toAnnotationSeq = input => Seq(MuxToggleOpAnnotation(input)),
       helpText = "",
       helpValueName = Some("<i>")
+    ),
+    new ShellOption[String](
+      longOption = "Folder",
+      toAnnotationSeq = input => Seq(Folder(input)),
+      helpText = "",
+      helpValueName = Some("<str>")
     ),
   )
 

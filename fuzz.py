@@ -11,6 +11,9 @@ if ' -- ' not in " ".join(sys.argv):
     sys.exit(-1)
 
 python_args, scala_args = " ".join(sys.argv).split(' -- ')
+
+if "Folder" not in scala_args:
+    scala_args.append(" --Folder \"\"")
 # Fuzz using the following parameters
 
 parser = argparse.ArgumentParser(description="Run RTLFuzzLab")
