@@ -2,13 +2,23 @@
 
 RTLFuzzLab is designed to allow for easy experimentation with Coverage Directed Mutational Fuzz Testing on RTL designs.
 
-![Software framework visualization](overview.svg)
+![Visualization of software framework](overview.svg)
 
 For details about RTLFuzzLab, please see our abstract released in WOSET 2021.
 
 [Abstract](https://woset-workshop.github.io/WOSET2021.html#article-10)
 
-Fajardo, Brandon and Laeufer, Kevin and Bachrach, Jonathan and Sen, Koushik. **RTLFUZZLAB: Building A Modular Open-Source Hardware Fuzzing Framework.** *In Workshop on Open-Source EDA Technology (WOSET)*, November, 2021.
+Fajardo, Brandon and Laeufer, Kevin and Bachrach, Jonathan and Sen, Koushik. **RTLFuzzLab: Building A Modular Open-Source Hardware Fuzzing Framework.** In *Workshop on Open-Source EDA Technology (WOSET)*, 2021.
+
+Bibtext citation:
+```
+@inproceedings{fajardo2021rtlfuzzlab,
+  title={{RTLFuzzLab: Building A Modular Open-Source Hardware Fuzzing Framework}},
+  author={Fajardo, Brandon and Laeufer, Kevin and Bachrach, Jonathan and Sen, Koushik},
+  booktitle={Workshop on Open-Source EDA Technology (WOSET)},
+  year={2021}
+}
+```
 
 ## Installation
 

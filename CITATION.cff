@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this software in your work, please cite it as below."
+authors:
+- family-names: "Fajardo"
+  given-names: "Brandon"
+- family-names: "Laeufer"
+  given-names: "Kevin"
+- family-names: "Bachrach"
+  given-names: "Jonathan"
+- family-names: "Koushik"
+  given-names: "Sen"
+title: "RTLFuzzLab"
+url: "https://github.com/ekiwi/rtl-fuzz-lab"
+preferred-citation:
+  type: conference-paper
+  authors:
+  - family-names: "Fajardo"
+    given-names: "Brandon"
+  - family-names: "Laeufer"
+    given-names: "Kevin"
+  - family-names: "Bachrach"
+    given-names: "Jonathan"
+  - family-names: "Koushik"
+    given-names: "Sen"
+  title: "RTLFuzzLab: Building A Modular Open-Source Hardware Fuzzing Framework"
+  year: 2021
+  collection-title: "Workshop on Open-Source EDA Technology (WOSET)"
