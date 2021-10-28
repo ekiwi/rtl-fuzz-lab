@@ -22,6 +22,7 @@ object FIRRTLHandler {
   )
 
   def firrtlToTarget(target: String, targetDir: String, annos: AnnotationSeq = Seq.empty): FuzzTarget = {
+    println("Loading and instrumenting FIRRTL...")
     val state = loadFirrtl(targetDir, annos)
     val info = TopmoduleInfo(state.circuit)
     //val dut = TreadleBackendAnnotation.getSimulator.createContext(state)

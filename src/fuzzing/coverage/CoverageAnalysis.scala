@@ -3,6 +3,10 @@ package fuzzing.coverage
 import fuzzing.afl.{FeedbackCap, Folder, FuzzingArgumentParser, Harness}
 import fuzzing.targets.{FIRRTLHandler, FuzzTarget}
 
+/** Analyzes coverage produced from running fuzzer.
+ *  Generates JSON file which can be plotted.
+ */
+
 object CoverageAnalysis extends App {
 
   val parser = new FuzzingArgumentParser
