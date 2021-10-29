@@ -45,14 +45,31 @@ object CoverageAnalysis extends App {
   }
 
   //Prints proportion of invalid files
-  assert(invalid_files / queue_files.length != 1, s"""No inputs in ${queue} are valid!""")
+  assert(invalid_files / queue_files.length != 1,
+    s"""No inputs in ${queue} are valid! \nAre the analysis arguments reasonable for the fuzzing run being analyzed?""")
   println(s"""Proportion of invalid files is ${invalid_files}/${queue_files.length}""")
 
-  //Builds JSON file from coverage data
+
+  //Build JSON string, adding coverage data (new)
+  //TODO: Update this so it is reformatted to be readable
+//  val coverageData = ujson.Arr()
+//  appendCoverageData(coverageData)
+//  val jsonString = ujson.Obj("coverage_data" -> coverageData)
+//
+//  // Append end time to JSON string
+//  val source = scala.io.Source.fromFile(end_time_file.toString())
+//  val end_time = try source.mkString.toLong finally source.close()
+//  jsonString("end_time") = (end_time - start_time) / 1000.0
+//
+//  //Write JSON string to file
+//  os.write.over(outputJSON, ujson.write(jsonString, indent=2))
+
+
+  //Builds JSON file from coverage data (old)
   val out = new StringBuilder("{")
-  appendCoverageData(out)
+  appendCoverageDataOld(out)
   out.append(", \n")
-  appendEndTime(out)
+  appendEndTimeOld(out)
   out.append("}")
   os.write.over(outputJSON, out.substring(0))
 
@@ -64,7 +81,46 @@ object CoverageAnalysis extends App {
   }
 
   //Append coverage data to JSON file
-  def appendCoverageData(out: StringBuilder): Unit = {
+//  def appendCoverageData(JSONarray: ujson.Arr): Unit = {
+//    var overallCoverage = Set[Int]()
+//    var previous_time = start_time
+//
+//    val filesCovIter = files_coverageCounts.iterator
+//    while (filesCovIter.hasNext) {
+//      val (file, count) = filesCovIter.next()
+//
+//      val coverageData = ujson.Obj()
+//
+//      //Add filename to JSON file
+//      val input_name = file.toString.split("/").last
+//      coverageData("filename") = input_name
+//
+//      //Add relative creation time (seconds) to JSON file
+//      val creation_time = getCreationTime(file.toString())
+//      assert(creation_time >= previous_time, "Input creation times are not monotonically increasing")
+//      previous_time = creation_time
+//
+//      val relative_creation_time = (creation_time - start_time) / 1000.0
+//      coverageData("creation_time") = relative_creation_time.toString
+//
+//      //Add newly covered points to current set of covered points.
+//      overallCoverage = overallCoverage.union(processMuxToggleCoverage(count))
+//      //Calculate total coverage reached cumulatively up to now. Add cumulative coverage to JSON file
+//      val coverPoints = count.size //TODO: This needs to be divided by 2 when using PseudoMuxToggleCoverage. Handle this?
+//      val cumulativeCoverage = overallCoverage.size.toDouble / coverPoints
+//      coverageData("cumulative_coverage") = cumulativeCoverage.toString
+//
+//      JSONarray.arr.append(coverageData)
+//
+//      if (cumulativeCoverage == 1.0 && filesCovIter.hasNext) {
+//        println(s"""Cumulative coverage reached 100% early. Stopping on file: $input_name""")
+//        return
+//      }
+//    }
+//  }
+
+  //Append coverage data to JSON file
+  def appendCoverageDataOld(out: StringBuilder): Unit = {
     var overallCoverage = Set[Int]()
     var previous_time = start_time
 
@@ -110,7 +166,7 @@ object CoverageAnalysis extends App {
   }
 
   //Append end time to JSON file
-  def appendEndTime(out: StringBuilder): Unit = {
+  def appendEndTimeOld(out: StringBuilder): Unit = {
     val source = scala.io.Source.fromFile(end_time_file.toString())
     val end_time = try source.mkString.toLong finally source.close()
     out.append(s""""end_time": ${(end_time - start_time) / 1000.0}""")
