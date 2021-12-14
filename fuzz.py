@@ -5,11 +5,12 @@ import os
 import sys
 import shutil
 
-if ' -- ' not in " ".join(sys.argv):
+
+if '---' not in " ".join(sys.argv):
     print("Please provide Scala arguments")
     sys.exit(-1)
 
-python_args, scala_args = " ".join(sys.argv).split(' -- ')
+python_args, scala_args = " ".join(sys.argv).split('---')
 
 
 parser = argparse.ArgumentParser(description="Run RTLFuzzLab")

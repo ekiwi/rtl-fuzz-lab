@@ -2,7 +2,23 @@
 
 RTLFuzzLab is designed to allow for easy experimentation with Coverage Directed Mutational Fuzz Testing on RTL designs.
 
-![Software framework visualization](overview.svg)
+![Visualization of software framework](overview.svg)
+
+For details about RTLFuzzLab, please see our abstract released in WOSET 2021.
+
+[Abstract](https://woset-workshop.github.io/WOSET2021.html#article-10)
+
+Fajardo, Brandon and Laeufer, Kevin and Bachrach, Jonathan and Sen, Koushik. **RTLFuzzLab: Building A Modular Open-Source Hardware Fuzzing Framework.** In *Workshop on Open-Source EDA Technology (WOSET)*, 2021.
+
+BibTeX citation:
+```
+@inproceedings{fajardo2021rtlfuzzlab,
+  title={{RTLFuzzLab: Building A Modular Open-Source Hardware Fuzzing Framework}},
+  author={Fajardo, Brandon and Laeufer, Kevin and Bachrach, Jonathan and Sen, Koushik},
+  booktitle={Workshop on Open-Source EDA Technology (WOSET)},
+  year={2021}
+}
+```
 
 ## Installation
 
@@ -10,8 +26,12 @@ RTLFuzzLab is designed to allow for easy experimentation with Coverage Directed 
 The following dependencies are required to run this software:
 * make
 * gcc
+* g++
 * java
 * sbt
+* verilator
+* matplotlib
+* scipy
 
 
 ### Get AFL Fork
@@ -45,46 +65,42 @@ cp src/fuzzing/template_seeds/binary/TLI2C_shortSeed.hwf seeds
 ```
 
 ### Run fuzzing script (fuzz.sh)
-Takes in arguments: `FIRRTL Harness Minutes Out_folder Iterations AFL_path`
+Script takes in two sets of arguments, separated by '---'.
+1. First set is arguments to the Python script, fuzz.py.
+> Execute "fuzz.py -h ---" for argument options to the Python script
+2. Second set is arguments passed to the Scala script, AFLDriver.
+The following are options to pass in:
+> --FIRRTL <path>: FIRRTL design which is to be fuzzed. Existing designs under: test/resources/fuzzing
+> --Harness <rfuzz/tlul>: Handles converting input bytes to hardware inputs. Current options: rfuzz, tlul (bus-centric)
+> --Directed: Flag for ignoring coverage in bus-monitors
+> --VCD: Flag for generating a VCD (value change dump)
+> --Feedback <number>: Maximum number of times a coverage point can trigger per input
+> --MuxToggleCoverage <boolean>: Options: false (Mux Toggle Coverage), true (Full Mux Toggle Coverage)
 
 Example:
 ```.sh
-./fuzz.py -t 3 -f ./example -i 1 -a ~/AFL --seed TLI2C_longSeed.hwf -- --FIRRTL test/resources/fuzzing/TLI2C.fir --Harness tlul --Directed --MuxToggleCoverage false --Feedback 255
+python3 fuzz.py -t 3 -f ./example -i 1 -a ~/AFL --seed TLI2C_longSeed.hwf --- --FIRRTL test/resources/fuzzing/TLI2C.fir --Harness tlul --Directed --MuxToggleCoverage false --Feedback 255
 ```
-This will set certain environment variables for AFL. Modify the script to manually control AFL.
 
-#### Arguments:
-* FIRRTL: FIRRTL design which is to be fuzzed
+### Analyze coverage (coverageAnalysis.py)
+Script takes in set of arguments equivalent to second set of arguments to fuzz.py described above.
 
-> Existing FIRRTL designs can be found under test/resources/fuzzing
+Example:
+```.sh
+python3 coverageAnalysis.py --FIRRTL test/resources/fuzzing/TLI2C.fir --Harness tlul --Directed --MuxToggleCoverage false --Feedback 255
+```
 
-* Harness: Method for applying input bytes to the hardware design
-
-> Current available harness options: rfuzz (direct), tlul (bus-centric)
-
-> The tlul harness should only be used on TL FIRRTL designs, as it is bus-centric to TL-UL designs
-
-* Minutes: Number of minutes to fuzz for (per fuzzing iteration)
-* Out_folder: Folder in which to output fuzzing results
-* Iterations: Number of iterations to performing fuzzing using current parameters
-* AFL_path: Path to forked AFL folder
-
-
-
-### Plot results
+### Plot results (plotCoverage.py)
 Takes in arguments: `do_average PATH [PATH ...]`
+> See plotCoverage.py -h for argument options
+Produces png of plot at coveragePlot.png
 
 Example:
 ```.sh
 python3 plotCoverage.py true results/example
 ```
 
-> Run script with -h option to get script information
-
-> Produces png of plot at coveragePlot.png
-
-
-## Acknoledgement
+## Acknowledgments
 Integrating AFL with our Scala based fuzz bench would not have been possible without the awesome AFL proxy infrastructure from the [JQF](https://github.com/rohanpadhye/JQF) project.
 
 ## License
