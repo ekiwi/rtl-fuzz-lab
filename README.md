@@ -36,8 +36,8 @@ The following dependencies are required to run this software:
 
 ### Get AFL Fork
 ```.sh
-git clone https://github.com/ekiwi/AFL
-cd AFL
+git clone https://github.com/ekiwi/AFL AFL_rtl_fuzz_lab
+cd AFL_rtl_fuzz_lab
 make
 ```
 This AFL fork is functionally identical to upstream AFL.
@@ -56,48 +56,49 @@ git clone https://github.com/ekiwi/rtl-fuzz-lab
 This will create two fifos (`a2j` and `j2a`), a `seeds` directory and compile the proxy to interface with AFL.
 
 ## Usage
-### Populate seeds folder
-Existing seeds are available in the folder: `rtl-fuzz-lab/src/fuzzing/template_seeds/binary`
-
-Example:
-```.sh
-cp src/fuzzing/template_seeds/binary/TLI2C_shortSeed.hwf seeds
-```
-
 ### Run fuzzing script (fuzz.sh)
 Script takes in two sets of arguments, separated by '---'.
 1. First set is arguments to the Python script, fuzz.py.
 > Execute "fuzz.py -h ---" for argument options to the Python script
+
+> Existing seeds for --seed argument are available in: `rtl-fuzz-lab/src/fuzzing/template_seeds/binary`
+
 2. Second set is arguments passed to the Scala script, AFLDriver.
 The following are options to pass in:
 > --FIRRTL <path>: FIRRTL design which is to be fuzzed. Existing designs under: test/resources/fuzzing
+
 > --Harness <rfuzz/tlul>: Handles converting input bytes to hardware inputs. Current options: rfuzz, tlul (bus-centric)
+
 > --Directed: Flag for ignoring coverage in bus-monitors
+
 > --VCD: Flag for generating a VCD (value change dump)
+
 > --Feedback <number>: Maximum number of times a coverage point can trigger per input
+
 > --MuxToggleCoverage <boolean>: Options: false (Mux Toggle Coverage), true (Full Mux Toggle Coverage)
 
 Example:
 ```.sh
-python3 fuzz.py -t 3 -f ./example -i 1 -a ~/AFL --seed TLI2C_longSeed.hwf --- --FIRRTL test/resources/fuzzing/TLI2C.fir --Harness tlul --Directed --MuxToggleCoverage false --Feedback 255
+python3 fuzz.py -time 3 -folder ./example -iterations 1 -alf-path ~/AFL_rtl_fuzz_lab --seed TLI2C_longSeed.hwf --- --FIRRTL test/resources/fuzzing/TLI2C.fir --Harness tlul --Directed --MuxToggleCoverage false --Feedback 255
 ```
 
 ### Analyze coverage (coverageAnalysis.py)
 Script takes in set of arguments equivalent to second set of arguments to fuzz.py described above.
+In addition, script takes in --Folder <folder> argument to specify location of folder to analyze.
 
 Example:
 ```.sh
-python3 coverageAnalysis.py --FIRRTL test/resources/fuzzing/TLI2C.fir --Harness tlul --Directed --MuxToggleCoverage false --Feedback 255
+python3 coverageAnalysis.py --FIRRTL test/resources/fuzzing/TLI2C.fir --Harness tlul --Directed --MuxToggleCoverage false --Feedback 255 --Folder example/0.out
 ```
 
 ### Plot results (plotCoverage.py)
 Takes in arguments: `do_average PATH [PATH ...]`
 > See plotCoverage.py -h for argument options
-Produces png of plot at coveragePlot.png
+Outputs png of generated plot as rtl-fuzz-lab/coveragePlot.png
 
 Example:
 ```.sh
-python3 plotCoverage.py true results/example
+python3 plotCoverage.py true example
 ```
 
 ## Acknowledgments
