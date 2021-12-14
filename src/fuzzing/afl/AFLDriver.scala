@@ -29,12 +29,7 @@
 
 package fuzzing.afl
 
-import fuzzing.coverage.DoNotCoverAnnotation
-import fuzzing.annotations.MuxToggleOpAnnotation
 import fuzzing.targets.{FIRRTLHandler, FuzzTarget}
-import chiseltest.WriteVcdAnnotation
-import firrtl.annotations.{Annotation, CircuitTarget}
-
 import java.io.{File, InputStream, OutputStream, PrintWriter}
 
 /** Provides a main function that can be used to interface with the AFL fuzzer.
@@ -42,53 +37,36 @@ import java.io.{File, InputStream, OutputStream, PrintWriter}
   *  Based on code written by Rohan Padhye and Caroline Lemieux for the JQF project
   */
 object AFLDriver extends App {
-  def usage = "Usage: java " + this.getClass + " FIRRTL TEST_INPUT_FILE AFL_TO_JAVA_PIPE JAVA_TO_AFL_PIPE TARGET_KIND"
-  require(args.length == 5, usage + "\nNOT: " + args.mkString(" "))
+  val parser = new FuzzingArgumentParser
+  val argAnnos = parser.parse(args, Seq()).get
 
-  val firrtlSrc = args(0)
-  val inputFile = os.pwd / os.RelPath(args(1))
-  val (a2jPipe, j2aPipe) = (os.pwd / args(2), os.pwd / args(3))
+  //Parse args
+  val targetKind = argAnnos.collectFirst {case Harness(i) => i}.getOrElse("")
+  val feedbackCap = argAnnos.collectFirst {case FeedbackCap(i) => i}.getOrElse(0)
+  val outputFolder = argAnnos.collectFirst {case Folder(i) => i}.getOrElse("")
 
-  // load the fuzz target
-  println(s"Loading and instrumenting $firrtlSrc...")
+  val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(targetKind, "test_run_dir/" + targetKind + "_with_afl", argAnnos)
 
-  //Declare annotations for fuzzing
-  //var targetAnnos = Seq[Annotation]()
-  var targetAnnos = Seq[Annotation](
-    DoNotCoverAnnotation(CircuitTarget("TLI2C").module("TLMonitor_72")),
-    DoNotCoverAnnotation(CircuitTarget("TLI2C").module("DummyPlusArgReader_75"))
-  )
-  targetAnnos = targetAnnos ++ Seq(MuxToggleOpAnnotation(false))
-
-  val writeVCD = false
-  if (writeVCD) {
-    targetAnnos = targetAnnos ++ Seq(WriteVcdAnnotation)
-  }
-
-  //Generating fuzz target
-  val targetKind = args(4)
-  val target: FuzzTarget = FIRRTLHandler.firrtlToTarget(firrtlSrc, targetKind, "test_run_dir/" + targetKind + "_with_afl", annos = targetAnnos)
-
-  println("Ready to fuzz! Waiting for someone to open the fifos!")
-  AFLProxy.fuzz(target, a2jPipe, j2aPipe, inputFile)
+  println("\nReady to fuzz! Waiting for someone to open the fifos!")
+  val (a2jPipe, j2aPipe, inputFile) = (os.pwd / "a2j", os.pwd / "j2a", os.pwd / "input")
+  AFLProxy.fuzz(target, feedbackCap, outputFolder, a2jPipe, j2aPipe, inputFile)
 }
 
 /** Communicates with the AFLProxy written by Rohan Padhye and Caroline Lemieux for the JQF project */
 object AFLProxy {
   val CoverageMapSize = 1 << 16
-  def fuzz(target: FuzzTarget, a2jPipe: os.Path, j2aPipe: os.Path, inputFile: os.Path): Unit = {
+  def fuzz(target: FuzzTarget, feedbackCap: Int, outputFolder: String, a2jPipe: os.Path, j2aPipe: os.Path, inputFile: os.Path): Unit = {
     // connect to the afl proxy
     val proxyInput = os.read.inputStream(a2jPipe)
     val proxyOutput = os.write.outputStream(j2aPipe)
 
-    // fuzz
     try {
 //      var overallCoverage = Set[Int]()                                                      //Hack to measure cumulative coverage realtime
 //      var cumulativeCoverage = 0.0                                                          //Hack to measure cumulative coverage realtime
 
       while (waitForAFL(proxyInput)) {
         val in = os.read.inputStream(inputFile)
-        val (coverage, _) = target.run(in)
+        val (coverage, _) = target.run(in, feedbackCap)
         in.close()
         // println(s"Sending coverage feedback. ($coverage)")
 
@@ -106,7 +84,7 @@ object AFLProxy {
       case _: java.io.IOException =>
     }
 
-    val end_time_outputFile = "temp_out/end_time"
+    val end_time_outputFile = outputFolder + "/end_time"
     val pw = new PrintWriter(new File(end_time_outputFile))
     pw.write(s"""${System.currentTimeMillis()}""")
     pw.close()

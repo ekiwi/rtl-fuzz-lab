@@ -10,7 +10,7 @@ For details about RTLFuzzLab, please see our abstract released in WOSET 2021.
 
 Fajardo, Brandon and Laeufer, Kevin and Bachrach, Jonathan and Sen, Koushik. **RTLFuzzLab: Building A Modular Open-Source Hardware Fuzzing Framework.** In *Workshop on Open-Source EDA Technology (WOSET)*, 2021.
 
-Bibtext citation:
+BibTeX citation:
 ```
 @inproceedings{fajardo2021rtlfuzzlab,
   title={{RTLFuzzLab: Building A Modular Open-Source Hardware Fuzzing Framework}},
@@ -36,8 +36,8 @@ The following dependencies are required to run this software:
 
 ### Get AFL Fork
 ```.sh
-git clone https://github.com/ekiwi/AFL
-cd AFL
+git clone https://github.com/ekiwi/AFL AFL_rtl_fuzz_lab
+cd AFL_rtl_fuzz_lab
 make
 ```
 This AFL fork is functionally identical to upstream AFL.
@@ -53,58 +53,57 @@ git clone https://github.com/ekiwi/rtl-fuzz-lab
 ```.sh
 ./setup.sh
 ```
-This will create two fifos (`a2j` and `j2a`), a `seeds` directory and compile the proxy to interface with AFL.
+This will create two fifos (`a2j` and `j2a`), a `seeds` directory, and compile the proxy to interface with AFL.
 
 ## Usage
-### Populate seeds folder
-Existing seeds are available in the folder: `rtl-fuzz-lab/src/fuzzing/seeds/binary`
-
-Example:
-```.sh
-cp src/fuzzing/seeds/binary/TLI2C_shortSeed.hwf seeds
-```
-
 ### Run fuzzing script (fuzz.sh)
-Takes in arguments: `FIRRTL Harness Minutes Out_folder Iterations AFL_path`
+Script takes in two sets of arguments, separated by '---'.
+1. First set is arguments to the Python script, fuzz.py.
+> Execute "fuzz.py -h ---" for argument options to the Python script
+
+> Existing seeds for --seed argument are available in: `rtl-fuzz-lab/src/fuzzing/template_seeds/binary`
+
+2. Second set is arguments passed to the Scala script, AFLDriver.
+The following are options to pass in:
+> --FIRRTL \<path\>: FIRRTL design which is to be fuzzed. Existing designs under: test/resources/fuzzing
+
+> --Harness \<rfuzz/tlul\>: Handles converting input bytes to hardware inputs. Current options: rfuzz, tlul (bus-centric)
+
+> --Directed: Flag for ignoring coverage in bus-monitors
+
+> --VCD: Flag for generating a VCD (value change dump)
+
+> --Feedback \<number\>: Maximum number of times a coverage point can trigger per input
+
+> --MuxToggleCoverage \<boolean\>: Options: false (Mux Toggle Coverage), true (Full Mux Toggle Coverage)
 
 Example:
 ```.sh
-./fuzz.sh test/resources/fuzzing/TLI2C.fir tlul 1 results/example 3 ~/AFL
+python3 fuzz.py --time 3 --folder ./example --iterations 1 --afl-path ~/AFL_rtl_fuzz_lab --seed TLI2C_longSeed.hwf --- --FIRRTL test/resources/fuzzing/TLI2C.fir --Harness tlul --Directed --MuxToggleCoverage false --Feedback 255
 ```
-This will set certain environment variables for AFL. Modify the script to manually control AFL.
 
-#### Arguments:
-* FIRRTL: FIRRTL design which is to be fuzzed
+### Analyze coverage (coverageAnalysis.py)
+Script takes in set of arguments equivalent to second set of arguments to fuzz.py described above.
 
-> Existing FIRRTL designs can be found under test/resources/fuzzing
+In addition, script takes in --Folder <folder> argument to specify location of folder to analyze.
 
-* Harness: Method for applying input bytes to the hardware design
+Example:
+```.sh
+python3 coverageAnalysis.py --FIRRTL test/resources/fuzzing/TLI2C.fir --Harness tlul --Directed --MuxToggleCoverage false --Feedback 255 --Folder example/0.out
+```
 
-> Current available harness options: rfuzz (direct), tlul (bus-centric)
-
-> The tlul harness should only be used on TL FIRRTL designs, as it is bus-centric to TL-UL designs
-
-* Minutes: Number of minutes to fuzz for (per fuzzing iteration)
-* Out_folder: Folder in which to output fuzzing results
-* Iterations: Number of iterations to performing fuzzing using current parameters
-* AFL_path: Path to forked AFL folder
-
-
-
-### Plot results
+### Plot results (plotCoverage.py)
 Takes in arguments: `do_average PATH [PATH ...]`
+> See plotCoverage.py -h for argument options
+
+> Outputs png of generated plot as rtl-fuzz-lab/coveragePlot.png
 
 Example:
 ```.sh
-python3 plotCoverage.py true results/example
+python3 plotCoverage.py true example
 ```
 
-> Run script with -h option to get script information
-
-> Produces png of plot at coveragePlot.png
-
-
-## Acknowledgment
+## Acknowledgments
 Integrating AFL with our Scala based fuzz bench would not have been possible without the awesome AFL proxy infrastructure from the [JQF](https://github.com/rohanpadhye/JQF) project.
 
 ## License

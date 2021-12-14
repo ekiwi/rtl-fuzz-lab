@@ -4,7 +4,7 @@
 
 package fuzzing.pass
 
-import fuzzing.annotations.MuxToggleOpAnnotation
+import fuzzing.afl.MuxToggleOpAnnotation
 import fuzzing.coverage.DoNotCoverAnnotation
 import firrtl._
 import firrtl.annotations._

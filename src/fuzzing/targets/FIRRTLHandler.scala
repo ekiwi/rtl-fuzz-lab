@@ -21,8 +21,9 @@ object FIRRTLHandler {
     // LogLevelAnnotation(LogLevel.Info),
   )
 
-  def firrtlToTarget(filename: String, target: String, targetDir: String, annos: AnnotationSeq = Seq.empty): FuzzTarget = {
-    val state = loadFirrtl(filename, targetDir, annos)
+  def firrtlToTarget(target: String, targetDir: String, annos: AnnotationSeq = Seq.empty): FuzzTarget = {
+    println("Loading and instrumenting FIRRTL...")
+    val state = loadFirrtl(targetDir, annos)
     val info = TopmoduleInfo(state.circuit)
     //val dut = TreadleBackendAnnotation.getSimulator.createContext(state)
     val dut = VerilatorBackendAnnotation.getSimulator.createContext(state)
@@ -36,9 +37,9 @@ object FIRRTLHandler {
   }
 
   private lazy val firrtlStage = new FirrtlStage
-  private def loadFirrtl(filename: String, targetDir: String, annos: AnnotationSeq): firrtl.CircuitState = {
+  private def loadFirrtl(targetDir: String, annos: AnnotationSeq): firrtl.CircuitState = {
     // we need to compile the firrtl file to low firrtl + add mux toggle coverage and meta reset
-    val allAnnos = DefaultAnnotations ++ Seq(TargetDirAnnotation(targetDir), FirrtlFileAnnotation(filename)) ++ annos
+    val allAnnos = DefaultAnnotations ++ Seq(TargetDirAnnotation(targetDir)) ++ annos
     val r = firrtlStage.execute(Array(), allAnnos)
     val circuit = r.collectFirst { case FirrtlCircuitAnnotation(c) => c }.get
     firrtl.CircuitState(circuit, r)

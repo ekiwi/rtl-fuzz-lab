@@ -1,6 +1,6 @@
 package fuzzing.pass
 
-import fuzzing.annotations.MuxToggleOpAnnotation
+import fuzzing.afl.MuxToggleOpAnnotation
 import chiseltest.WriteVcdAnnotation
 import chiseltest.simulator._
 import firrtl.LowFirrtlEmitter

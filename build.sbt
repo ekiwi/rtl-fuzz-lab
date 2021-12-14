@@ -20,6 +20,7 @@ resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "0.5-SNAPSHOT"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.6" % Test
+//libraryDependencies += "com.lihaoyi" %% "upickle" % "1.4.2"
 
 scalaSource in Compile := baseDirectory.value / "src"
 scalaSource in Test := baseDirectory.value / "test"

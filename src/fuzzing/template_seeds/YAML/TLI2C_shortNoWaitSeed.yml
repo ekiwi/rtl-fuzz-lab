@@ -1,0 +1,30 @@
+---
+################################################################################
+# TEST VARIABLES
+################################################################################
+# NUM_CRYPTS=2
+# DATA_BLOCK_SIZE=4
+# DATA_IN_LINE_START_1=-28
+# DATA_OUT_LINE_START_1=-8
+# DATA_IN_LINE_START_2=-23
+# DATA_OUT_LINE_START_2=-4
+################################################################################
+# Wait a 8 clk cycles for AES to go into IDLE state
+- {opcode: write, addr: 0x10016074, data: 0x82}
+
+# Read from output data registers
+- {opcode: read, addr: 0x10016070, data: 0x0}
+- {opcode: write, addr: 0x10016004, data: 0xDEADBEEF}
+- {opcode: write, addr: 0x10016074, data: 0x82}
+
+# Read from output data registers
+- {opcode: read, addr: 0x10016070, data: 0x0}
+- {opcode: write, addr: 0x10016004, data: 0xDEADBEEF}
+
+# Intilize shadowed CTRL register
+- {opcode: write, addr: 0x10016074, data: 0x82}
+
+# Read from output data registers
+- {opcode: read, addr: 0x10016070, data: 0x0}
+- {opcode: write, addr: 0x10016004, data: 0xDEADBEEF}
+...
